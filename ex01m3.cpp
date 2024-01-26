@@ -1,8 +1,8 @@
 #include<bits/stdc++.h>
 using namespace std;
-long long n, m;
+int n,m;
 
-long long bsa(vector<long long> &v, long long cap) {
+long long bsa(vector<int> &v, long long cap) {
     cap -= n;
     if(cap < 1) return 0;
     long long high = LLONG_MAX;
@@ -16,7 +16,8 @@ long long bsa(vector<long long> &v, long long cap) {
             sum += mid / v[i];
         }
         // cout << "     sum = " << sum << "\n";
-        if(sum >= cap) {
+        if(sum >= cap || sum < 0) {
+            if(sum >=0)
             ans = min(ans, mid);
             high = mid-1;
         } else if(sum < cap) {
@@ -28,12 +29,12 @@ long long bsa(vector<long long> &v, long long cap) {
 }
 
 int main() {
-    vector<long long> v;
+    vector<int> v;
 
     cin >> n >> m;
 
     for(int i=0;i<n;i++) {
-        long long a;
+        int a;
         cin >> a;
         v.push_back(a);
     }
