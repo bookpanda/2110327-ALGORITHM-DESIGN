@@ -10,6 +10,17 @@ vector<int> matrix_multiply(const vector<int> &M,const vector<int> &N,int k) {
     return v;
 }
 
+vector<int> modex(vector<int> &x, int n, int k) {
+    if(n == 1) return x;
+    vector<int> res = modex(x, n/2, k);
+    vector<int> ans = matrix_multiply(res, res, k);
+    if(n % 2 == 0) {
+        return ans;
+    } else {
+        return matrix_multiply(ans, x, k);
+    }
+}
+
 int main() {
     int n,k;
     vector<int> v;
@@ -21,30 +32,6 @@ int main() {
         v.push_back(a);
     }
 
-    stack<pair<int, vector<int> > > s;
-    int m = n;
-    while(m > 0) {
-        if(s.empty()) {
-            s.push({1, v});
-            continue;
-        }
-        int mul = s.top().first;
-        vector<int> matrix = s.top().second;
-        s.push({mul*2, matrix_multiply(matrix, matrix, k)});
-
-        m /= 2;
-    }
-
-    vector<int> ans = {1,0,0,1};
-    while(!s.empty()) {
-        int mul = s.top().first;
-        vector<int> matrix = s.top().second;
-        s.pop();
-        if(n < mul) continue;
-        // cout << "mul = " << mul << "\n";
-        // cout << "[ " << matrix[0] << " " << matrix[1] << " " << matrix[2] << " " << matrix[3] << " ]\n";
-        n -= mul;
-        ans = matrix_multiply(ans, matrix, k);
-    }
+    vector<int> ans = modex(v, n, k);
     cout << ans[0] << " " << ans[1] << " " << ans[2] << " " << ans[3] << "\n";
 }
