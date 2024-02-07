@@ -1,48 +1,43 @@
 #include<bits/stdc++.h>
 using namespace std;
 
-vector<int> before;
-bool used[20];
-int n;
-
-void recur(int lvl, vector<int> &v) {
+void permu(int lvl, int n, vector<int> &v, vector<bool> &used, map<int,int> &prereq) {
     if(lvl == n) {
-        for(int i=0;i<n;i++) {
+        for(int i=0;i<v.size();i++) {
             cout << v[i] << " ";
         }
         cout << "\n";
         return;
     }
-    for(int i=0;i<n;i++) {
-        if(used[i]) continue;
 
-        if(before[i] != -1 && !used[before[i]]) {
-            // cout << "before (" << before[i] << ") of " << i << " is not used\n";
+    for(int i=0;i<n;i++) {
+        if(prereq.find(i) != prereq.end() && !used[prereq[i]]) { //have condition
             continue;
         }
-
-        used[i] = true;
-        v[lvl] = i;
-        recur(lvl+1, v);
-        used[i] = false;
+        if(!used[i]) {
+            used[i] = true;
+            v.push_back(i);
+            permu(lvl+1, n, v, used, prereq);
+            used[i] = false;
+            v.pop_back();
+        }
     }
 }
 
 int main() {
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
-    int m;
-
+    int n, m;
+    vector<int> v;
+    vector<bool> used;
+    map<int,int> prereq;
     cin >> n >> m;
-    before.resize(n);
-    for(int i=0;i<n;i++) before[i] = -1;
-
-    while(m--) {
-        int ai,bi;
-        cin >> ai >> bi;
-        before[bi] = ai;
+    used.resize(n);
+    for(int i=0;i<m;i++) {
+        int a,b;
+        cin >> a >> b;
+        prereq[b] = a;
     }
-    vector<int> v(n);
-    recur(0, v);
 
+    permu(0, n, v, used, prereq);
 }

@@ -1,48 +1,41 @@
 #include<bits/stdc++.h>
 using namespace std;
 
-bool canShoot(int xCannon, int xMonster, int range) {
-    return xCannon+range >= xMonster && xCannon-range <= xMonster;
+bool canShoot(int xMon, int xCannon, int r) {
+    return abs(xCannon - xMon) <= r;
 }
 
-
 int main() {
-    int n,m,k,w;
-    vector<int> p,h,t;
-    vector<pair<int,int> > mon;
-
+    int n, m, k, w;
     cin >> n >> m >> k >> w;
-    p.resize(m);
-    h.resize(m);
-    t.resize(k);
-    for(int i=0;i<m;i++) cin >> p[i]; // coords of monster
-    for(int i=0;i<m;i++) cin >> h[i]; // hp
-    for(int i=0;i<k;i++) cin >> t[i]; // coords of cannon
-    sort(t.begin(), t.end());
-    for(int i=0;i<m;i++) {
-        mon.push_back({p[i],h[i]});
-    }
+
+    vector<int> mpos, mhp, tpos;
+    vector<pair<int,int > > mon;
+    mpos.resize(m);
+    mhp.resize(m);
+    tpos.resize(k);
+    mon.resize(m);
+    for(int i=0;i<m;i++) cin >> mpos[i];
+    for(int i=0;i<m;i++) cin >> mhp[i];
+    for(int i=0;i<k;i++) cin >> tpos[i];
+    for(int i=0;i<m;i++) mon.push_back({mpos[i], mhp[i]});
+    sort(tpos.begin(), tpos.end());
     sort(mon.begin(), mon.end());
 
-    int midx=0;
+    int mid=0;
     for(int i=0;i<k;i++) {
-        // cout << "cannon " << i << " is at tile " << t[i] << "\n";
-        while(midx<k && (mon[midx].second<=0 || !canShoot(t[i], mon[midx].first, w))) {
-            if(mon[midx].first - t[i] > w) break;
-            midx++;
-            // cout << "now mon at " << mon[midx].first << "\n";
+        while(mid < mon.size() && (!canShoot(tpos[i], mon[mid].first, w) || mon[mid].second == 0)) {
+            if(mon[mid].first - tpos[i] > w) break;
+            mid++;
         }
-        if(midx<k && mon[midx].second>0 && canShoot(t[i], mon[midx].first, w)) {
-            // cout << "cannon " << i << " shoot monster " << midx << "\n";
-            mon[midx].second--;
+        if(mid < mon.size() && canShoot(tpos[i], mon[mid].first, w) && mon[mid].second > 0) {
+            mon[mid].second--;
         }
     }
-
-    int total = 0;
-    for(int i=0;i<m;i++){
-        // cout << "moster " << i << " has health " << mon[i].second << "\n";
-        total += mon[i].second;
+    int totalhp = 0;
+    for(auto x: mon) { 
+        totalhp += x.second;
     }
-
-    cout << total << "\n";
+    
+    cout << totalhp << "\n";
 }
