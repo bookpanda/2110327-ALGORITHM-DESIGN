@@ -1,20 +1,24 @@
 #include<bits/stdc++.h>
 using namespace std;
 
-long long modex(int x, int n, int k) {
-    if(n==1) return x % k;
-    long long res = modex(x, n/2, k);
-    if(n % 2 == 0) {
-        return (res * res) % k;
-    } else {
-        return ((res * res) % k) * x % k;
+void cook(int lvl, int cou, int a, int b, vector<int> &v) {
+    if(lvl == b) {
+        if(cou != a) return;
+        for(int i=0;i<v.size();i++) {
+            cout << v[i];
+        } cout << "\n";
+        return;
     }
+    v[lvl] = 0;
+    cook(lvl+1, cou, a, b, v);
+    v[lvl] = 1;
+    cook(lvl+1, cou+1, a, b, v);
 }
 
 int main() {
-    int x, n, k;
-
-    cin >> x >> n >> k;
-    long long ans = modex(x, n, k);
-    cout << ans << "\n";
+    int a, b;
+    cin >> a >> b;
+    vector<int> v;
+    v.resize(b);
+    cook(0, 0, a, b, v);
 }
