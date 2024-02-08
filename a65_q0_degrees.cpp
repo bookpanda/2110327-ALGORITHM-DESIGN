@@ -1,39 +1,36 @@
 #include<bits/stdc++.h>
 using namespace std;
-int n;
 map<int, int> mp;
 
 int main() {
-    vector<vector<int> > am;
-
+    std::ios_base::sync_with_stdio(false);
+    std::cin.tie(0);
+    int n;
     cin >> n;
+    int maxdeg = 0;
+    vector<vector<int> > v;
     for(int i=0;i<n;i++) {
-        vector<int> v;
+        vector<int> tmp;
         for(int j=0;j<n;j++) {
             int a;
             cin >> a;
-            v.push_back(a);
-        }
-        am.push_back(v);
-    }
-
-    int maxdeg=0;
-    for(int i=0;i<n;i++) {
-        for(int j=0;j<n;j++) {
-            if(am[i][j] == 1) {
-                // mp[i]++;
+            tmp.push_back(a);
+            if(a == 1) {
+                mp[i]++;
                 mp[j]++;
-                // maxdeg = max(maxdeg, mp[i]);
-                maxdeg = max(maxdeg, mp[j]);
+                maxdeg = max(maxdeg, max(mp[i]/2, mp[j]/2));
             }
         }
+        v.push_back(tmp);
     }
-    map<int,int> deg;
-    for(auto x: mp) {
-        // cout << x.first << ", " << x.second << "\n";
-        deg[x.second]++;
+    map<int, int> s;
+    for(int i=0;i<=maxdeg;i++) s[i] = 0;
+    for(auto &x: mp) {
+        // cout << "node " << x.first << " have deg=" << x.second << "\n";
+        int deg = x.second / 2;
+        s[deg]++;
     }
-    for(int i=0;i<=maxdeg;i++) {
-        cout << deg[i] << " ";
+    for(auto &x: s) {
+        cout << x.second << " ";
     }
 }
