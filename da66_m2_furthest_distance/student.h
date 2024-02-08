@@ -11,8 +11,9 @@ int CP::map_bst<KeyT, MappedT, CompareT>::my_recur(node* n, int &aux){
     if(!n) return -1;
     int maxl = my_recur(n->left, aux);
     int maxr = my_recur(n->right, aux);
-    aux = std::max(aux, 2+maxl+maxr);
-    return 1+std::max(maxl, maxr);
+    aux = std::max(aux, 2 + maxl + maxr); //lvl left + lvl right + 2 edges to root node
+    return 1 + std::max(maxl, maxr); //return level of tree
+    
 }
 
 template <typename KeyT,
@@ -20,9 +21,9 @@ template <typename KeyT,
           typename CompareT>
 int CP::map_bst<KeyT, MappedT, CompareT>::furthest_distance() {
 	// write your code here
-    if(mSize==0) return -1;
-    int a=0;
-	my_recur(mRoot, a);
+    if(!mRoot) return -1;
+    int a = 0;
+    my_recur(mRoot, a);
     return a;
 }
 
