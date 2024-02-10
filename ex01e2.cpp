@@ -1,50 +1,46 @@
 #include<bits/stdc++.h>
 using namespace std;
 
-int get_sum(vector<int> &qs, int st, int ed) {
-    if(st-1<0) return qs[ed];
+int getSum(int st, int ed, vector<int> &qs) {
+    if(st-1 < 0) return qs[ed];
     return qs[ed] - qs[st-1];
 }
 
-int max_sum(vector<int> &v, vector<int> &qs, int st, int ed) {
-    if(st==ed) return v[st];
+int mcs(int st, int ed, vector<int> &v, vector<int> &qs) {
+    // cout << "st=" << st << ", ed=" << ed << "\n";
+    if(st == ed) return v[st];
 
     int mid = (st+ed)/2;
-    int left = max_sum(v, qs, st, mid);
-    int right = max_sum(v, qs, mid+1, ed);
-    int maxdiv = max(left, right);
+    int lefthalf = mcs(st, mid, v, qs);
+    int righthalf = mcs(mid+1, ed, v, qs);
+    int maxhalf = max(lefthalf, righthalf);
 
-    int leftmax = v[mid];
-    for(int i=st;i<=mid;i++) {
-        leftmax = max(leftmax, get_sum(qs, i, mid));
+    int left = v[mid];
+    for(int i=st;i<mid;i++) {
+        left = max(left, getSum(i, mid, qs));
     }
-
-    int rightmax = v[mid+1];
+    int right = v[mid+1];
     for(int i=mid+1;i<=ed;i++) {
-        rightmax = max(rightmax, get_sum(qs, mid+1, i));
+        right = max(right, getSum(mid+1, i, qs));
     }
-    // cout << "st " << st << ", ed " << ed << ", mid " << mid << ", left=" << left << ", right=" << right << " ,  leftmax=" << leftmax << " , rightmax=" << rightmax << "\n";
-    return max(maxdiv, leftmax+rightmax);
+    int middle = left + right;
+
+    return max(middle, maxhalf);
 }
 
 int main() {
     int n;
-    vector<int> v;
+    vector<int> v, qs;
     cin >> n;
     for(int i=0;i<n;i++) {
         int a;
         cin >> a;
         v.push_back(a);
     }
-    vector<int> qs;
-    qs.resize(n);
-    qs[0] = v[0];
-    for(int i=1;i<n;i++) qs[i] = qs[i-1] + v[i];
-   
-    // for(int i=0;i<n;i++) {
-    //     cout << qs[i] << " ";
-    // }
-    // cout << "\n";
-
-    cout << max_sum(v, qs, 0, n-1) << "\n";
+    qs.push_back(v[0]);
+    for(int i=1;i<n;i++) {
+        qs.push_back(qs[i-1]+v[i]);
+    }
+    int ans = mcs(0, n-1, v, qs);
+    cout << ans << "\n";
 }
