@@ -1,39 +1,34 @@
 #include<bits/stdc++.h>
 using namespace std;
 
-void gen_mtx(vector<vector<int> > &v, int a, int b, int top, int bottom, int left, int right) {
-    // cout << "a " << a << ", b " << b << ", top " << top << ", bottom " << bottom << ", left " << left << ", right " << right << "\n";
-    if(top > bottom || left > right) return;
+void cook(int r1, int r2, int c1, int c2, vector<vector<int> > &v, int a, int b) {
+    if(r1 > r2 || c1 > c2) return;
+    // cout << r1 << ", " << c1 << " to " << r2 << ", " << c2 << ", len=" << r2-r1+1 << ", a=" << a << ", b=" << b <<  "\n";
     if(a == 0) {
-        v[top][left] = b;
-        // cout << "v[" << top << "][" << left << "] = " << b << "\n";
+        v[r1][c1] = b;
         return;
     }
 
-    int midr = (top + bottom) / 2;
-    int midc = (left + right) / 2;
-    gen_mtx(v, a-1, b,   top,       midr,   left,   midc);
-    gen_mtx(v, a-1, b-1, top,       midr,   midc+1, right);
-    gen_mtx(v, a-1, b+1, midr+1,    bottom, left,   midc);
-    gen_mtx(v, a-1, b,   midr+1,    bottom, midc+1, right);
-    return;
+    int midr = (r1+r2) / 2;
+    int midc = (c1+c2) / 2;
+    cook(r1,    midr,    c1,     midc,    v, a-1, b);
+    cook(r1,    midr,    midc+1,  c2,     v, a-1, b-1);
+    cook(midr+1, r2,     c1,     midc,    v, a-1, b+1);
+    cook(midr+1, r2,     midc+1,  c2,     v, a-1, b);
 }
 
 int main() {
-    int a, b;
-
+    int a,b;
     cin >> a >> b;
-
+    int n = 1 << a;
     vector<vector<int> > v;
-    v.resize(1 << a);
-    for(int i=0;i<v.size();i++) v[i].resize(1 << a);
-    gen_mtx(v, a, b, 0, (1 << a)-1, 0, (1 << a)-1);
-
-    for(int i=0;i<v.size();i++) {
-        for(int j=0;j<v[0].size();j++) {
-            // cout << "i " << i << ", j " << j << ", v=" << v[i][j] << "\n";
+    v.resize(n);
+    for(int i=0;i<n;i++) v[i].resize(n);
+    // cout << "n = " << n << "\n";
+    cook(0, n-1, 0, n-1, v, a, b);
+    for(int i=0;i<n;i++) {
+        for(int j=0;j<n;j++) {
             cout << v[i][j] << " ";
-        }
-        cout << "\n";
+        } cout << "\n";
     }
 }

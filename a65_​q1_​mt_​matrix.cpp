@@ -1,38 +1,37 @@
 #include<bits/stdc++.h>
 using namespace std;
+int u, v, w, p;
 
-int find_val(vector<vector<int> > &mtx, vector<long long> half, int n, long long r, long long c) {
-    // cout << "half = " << half[n] << ", r=" << r << ", c=" << c << "\n";
-    if(n==1) {
-        return mtx[r-1][c-1];
+int mt(long long size, long long r, long long c) {
+    // cout << "size=" << size << ", r=" << r << ", c=" << c << "\n";
+    if(size == 2) {
+        if(r==1 && c==1) return u;
+        if(r==1 && c==2) return v;
+        if(r==2 && c==1) return w;
+        if(r==2 && c==2) return p;
     }
-
-    if(r > half[n]) {
-        if(c > half[n]) return -1 * find_val(mtx, half, n-1, c-half[n], r-half[n]);
-        return -1 * find_val(mtx, half, n-1, r-half[n], c);
+    long long mid = size / 2;
+    long long nr = r - mid;
+    long long nc = c - mid;
+    if(r > mid) {
+        if(c > mid) return -1 * mt(mid, nc, nr);
+        return -1 * mt(mid, nr, c);
     }
-    if(c > half[n]) return find_val(mtx, half, n-1, c-half[n], r);
-    return find_val(mtx, half, n-1, r, c);
+    if(c > mid) return mt(mid, nc, r);
+    return mt(mid, r, c);
 }
 
 int main() {
-    int n, m, u, v, w, p;
-    vector<vector<int> > mtx;
-
+    int n, m;
     cin >> n >> m;
     cin >> u >> v >> w >> p;
-    mtx = {{u, v}, {w, p}};
-    vector<long long> half;
-    half.push_back(-1);
-    half.push_back(1);
-    for(int i=2;i<=n;i++) {
-        half.push_back(half[i-1] * 2);
-    }
     while(m--) {
         long long r, c;
-
         cin >> r >> c;
-        cout << find_val(mtx, half, n, r, c) << "\n";
+        long long size = 1LL << n;
+        // cout << "size = " << size << "\n";
+        int ans = mt(size, r, c);
+        cout << ans << "\n";
     }
 
 }
