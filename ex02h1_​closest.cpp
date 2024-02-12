@@ -2,55 +2,55 @@
 using namespace std;
 
 int dist(pair<int,int> p1, pair<int,int> p2) {
-    int dx = p1.first - p2.first;
-    int dy = p1.second - p2.second;
-    return dx*dx + dy*dy;
+    int d1 = p1.first - p2.first;
+    int d2 = p1.second - p2.second;
+    return d1*d1 + d2*d2;
 }
 
-int cp(vector<pair<int,int> > &vx) {
-    if(vx.size() == 1) return INT_MAX;
-    if(vx.size() == 2) return dist(vx[0], vx[1]);
-    int mid = vx.size() / 2;
+int cp(int st, int ed, vector<pair<int,int> > &v) {
+    if(st >= ed) return INT_MAX;
+    if(ed - st == 1) return dist(v[st], v[ed]);
 
-    vector<pair<int,int> > vxl, vxr;
-    for(int i=0;i<mid;i++) {
-        vxl.push_back(vx[i]);
-    }
-    for(int i=mid+1;i<vx.size();i++) {
-        vxr.push_back(vx[i]);
-    }
+    int mid = (st+ed)/2;
+    int lefthalf = cp(st, mid, v);
+    int righthalf = cp(mid+1, ed, v);
+    int d = min(lefthalf, righthalf);
 
-    int minl = cp(vxl);
-    int minr = cp(vxr);
-    int b = min(minl, minr);
-    int midx = (vx[mid].first + vx[mid+1].first) / 2;
-
-    vector<pair<int,int> > vyb;
-    for(int i=0;i<vx.size();i++) {
-        if(abs(vx[i].first - midx) < b) vyb.push_back({vx[i].second, vx[i].first});
-    }
-    sort(vyb.begin(), vyb.end());
-
-    int mindist = b;
-    for(int i=0;i<vyb.size();i++) {
-        for(int j=i+1;j<vyb.size() && (vyb[j].first - vyb[i].first) < b; j++) {
-            int dis = dist(vyb[i], vyb[j]);
-            mindist = min(mindist, dis);
+    int midx = (v[mid].first + v[mid+1].first) / 2;
+    // cout << "st=" << st << ", ed=" << ed << ", d=" << d << ", midx=" << midx << "\n";
+    vector<pair<int,int> > tmp;
+    for(int i=st;i<=ed;i++) {
+        // cout << "point:" << v[i].first << ", " << v[i].second << "\n";
+        if(abs(v[i].first - midx) < d) {
+            // cout << "have this within d :" << v[i].first << ", " << v[i].second << "\n";
+            tmp.push_back({v[i].second, v[i].first});
         }
     }
-    return mindist;
+    sort(tmp.begin(), tmp.end());
+
+    int mindis = d;
+    for(int i=0;i<tmp.size();i++) {
+        for(int j=i+1;j<tmp.size();j++) {
+            if(tmp[j].first - tmp[i].first > d) break;
+            mindis = min(mindis, dist(tmp[i], tmp[j]));
+        }
+    }
+
+    // cout << "dis=" << mindis << "\n";
+    return mindis;
 }
 
 int main() {
     int n;
-    vector<pair<int,int> > vx;
-
+    vector<pair<int,int> > v;
     cin >> n;
     for(int i=0;i<n;i++) {
         int x, y;
         cin >> x >> y;
-        vx.push_back({x, y});
+        v.push_back({x, y});
     }
-    sort(vx.begin(), vx.end());
-    cout << cp(vx);
+    sort(v.begin(), v.end());
+
+    int ans = cp(0, n-1, v);
+    cout << ans << "\n";
 }
