@@ -1,38 +1,38 @@
 #include<bits/stdc++.h>
 using namespace std;
+int n;
+vector<int> v;
 
-vector<int> cook(int c1, int c2, vector<int> &v) {
-    if(c1 == c2) return {v[c1]};
-    if(c2 - c1 == 1) return {v[c1] + v[c2], v[c1] - v[c2]};
+vector<int> cook(int st, int ed) {
+    int length = ed-st+1;
+    if(length == 1) {
+        return {v[st]};
+    } else if(length == 2) {
+        return {v[st]+v[ed], v[st]-v[ed]};
+    }
 
-    int midc = (c1 + c2) / 2;
-    vector<int> top =       cook(c1,     midc, v);
-    vector<int> bottom =    cook(midc+1, c2, v);
-
+    int mid = (st+ed) / 2;
+    vector<int> left = cook(st, mid);
+    vector<int> right = cook(mid+1, ed);
     vector<int> ans;
-    for(int i=0;i<top.size();i++) {
-        ans.push_back(top[i] + bottom[i]);
+    for(int i=0;i<length/2;i++) {
+        ans.push_back(left[i]+right[i]);
     }
-    for(int i=0;i<bottom.size();i++) {
-        ans.push_back(top[i] - bottom[i]);
+    for(int i=0;i<length/2;i++) {
+        ans.push_back(left[i]-right[i]);
     }
-
     return ans;
 }
 
 int main() {
-    //instead of matrix, we remember which r, c has how many 1/-1
-    int n;
-    vector<int> v;
     cin >> n;
     for(int i=0;i<n;i++) {
         int a;
         cin >> a;
         v.push_back(a);
     }
-    vector<int > hnm = cook(0, n-1, v);
-    // cout << hnm.size() << "\n";
-    for(int i=0;i<n;i++) {
-        cout << hnm[i] << " ";
+    vector<int> ans = cook(0, n-1);
+    for(auto x: ans) {
+        cout << x << " ";
     }
 }
