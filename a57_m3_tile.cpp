@@ -1,31 +1,36 @@
 #include<bits/stdc++.h>
 using namespace std;
 int n, m;
-long long dp[13][10010];
+vector<int> t;
+int dp[15][10010]; // ith tile, total area at least cost
 
 int main() {
-    //tile swapping => greedy
-    //finding right sizes that add up to M => [10010][11] total area, how many tiles used
-    //believe that there is only one combinations of N tiles that add up to M
     cin >> n >> m;
-    for(int i=0;i<=n;i++) 
-    for(int j=0;j<=m;j++)
+    t.push_back(-1);
+    for(int i=0;i<n;i++) {
+        int a;
+        cin >> a;
+        t.push_back(a);
+    }
+    for(int i=0;i<=n;i++) {
+        for(int j=0;j<=m;j++)
         dp[i][j] = INT_MAX;
-
+    }
     dp[0][0] = 0;
+
     for(int i=1;i<=n;i++) {
-        int tile;
-        cin >> tile;
-        for(int j=m;j>=0;j--) {
-            for(int k=1;k<=100;k++) {
-                int area = j-k*k;
-                int dif = tile - k;
-                if(area < 0) break;
-                dp[i][j] = min(dp[i][j], dp[i-1][area] + dif*dif);
+        for(int k=m;k>=0;k--) {
+            for(int j=1;j<=100;j++) {
+                int dif = j - t[i];
+                int cost = dif * dif;
+                int befarea = k - j*j;
+                if(befarea < 0) break;
+                if(dp[i-1][befarea] == INT_MAX) continue;
+                else dp[i][k] = min(dp[i][k], dp[i-1][befarea] + cost);
+                // cout << "dp[" << i << "][" << k << "] = " << dp[i][k] << "\n";
             }
         }
     }
-
-    if(dp[n][m] == INT_MAX) cout << -1 << "\n";
+    if(dp[n][m] == INT_MAX) cout << "-1\n";
     else cout << dp[n][m] << "\n";
 }

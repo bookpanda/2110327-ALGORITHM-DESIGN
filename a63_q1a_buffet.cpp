@@ -1,7 +1,7 @@
 #include<bits/stdc++.h>
 using namespace std;
-int n, k, m;
-vector<int> f, qs;
+int n, k, m; 
+vector<int> food, qs;
 
 int getSum(int st, int ed) {
     if(st-1 < 0) return qs[ed];
@@ -15,26 +15,23 @@ int main() {
     for(int i=0;i<n;i++) {
         int a;
         cin >> a;
-        f.push_back(a - m);
+        food.push_back(a-m);
     }
-    qs.push_back(f[0]);
-    for(int i=1;i<n;i++) qs.push_back(qs[i-1] + f[i]);
-
+    qs.push_back(food[0]);
+    for(int i=1;i<n;i++) qs.push_back(qs[i-1] + food[i]);
     for(int i=0;i<k;i++) {
-        int st, want;
-        cin >> st >> want;
-        st--;
+        int p, w;
+        cin >> p >> w;
+        p--;
 
         int high = n-1;
-        int low = st;
+        int low = p;
         int mid = (high+low)/2;
-        int minId = INT_MAX;
-        // cout << "want " << want << "\n";
+        int ans = INT_MAX;
         while(low <= high) {
-            int sum = getSum(st, mid);
-            // cout << "mid = " << mid << ", sum=" << sum << "\n";
-            if(sum >= want) {
-                minId = min(minId, mid);
+            int sum = getSum(p, mid);
+            if(sum >= w) {
+                ans = min(ans, mid);
                 high = mid-1;
                 mid = (high+low)/2;
             } else {
@@ -42,7 +39,6 @@ int main() {
                 mid = (high+low)/2;
             }
         }
-
-        cout << minId+1 << "\n";
+        cout << ans+1 << "\n";
     }
 }
