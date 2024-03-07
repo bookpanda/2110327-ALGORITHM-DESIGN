@@ -1,30 +1,32 @@
 #include<bits/stdc++.h>
 using namespace std;
-map<pair<int,int>, int> mp;
+int n;
+vector<int> v;
+map<pair<int,int>, int> dp;
 
-int mcm(int l, int r, vector<int> &v) {
-    if(l == r) return 0;
-    if(mp.find({l, r}) != mp.end()) return mp[{l, r}];
-    
-    int mincost = INT_MAX;
-    for(int i=l;i<r;i++) { // if v[i] = r, v[i+1] = c
-        int sum = mcm(l, i, v) + mcm(i+1, r, v) + v[l]*v[i+1]*v[r+1];
-        mincost = min(mincost, sum);
+int cook(int st, int ed) {
+    if(st >= ed) return 0;
+    if(dp.find({st, ed}) != dp.end()) return dp[{st, ed}];
+
+
+    int totalcost = INT_MAX;
+    for(int i=st+1;i<=ed;i++) {
+        int cost = v[st] * v[i] * v[ed+1];
+        totalcost = min(totalcost, cost + cook(st, i-1) + cook(i, ed));
     }
+    dp[{st, ed}] = totalcost;
+    // cout << "st= " << st << ", ed = " << ed << ", ans = " << totalcost << "\n";
 
-    mp[{l, r}] = mincost;
-    return mincost;
+    return totalcost;
 }
 
 int main() {
-    int n;
     cin >> n;
-    vector<int> v;
     for(int i=0;i<=n;i++) {
         int a;
         cin >> a;
         v.push_back(a);
     }
-    int ans = mcm(0, n-1, v);
+    int ans = cook(0, n-1);
     cout << ans << "\n";
 }
