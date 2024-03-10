@@ -1,58 +1,46 @@
 #include<bits/stdc++.h>
 using namespace std;
-long long w;
-// vector<long long> y;
-map<long long, long long> y;
-// map<pair<long long, long long>, long long> dp; no need bc it never hit
 int n;
+long long w;
+map<long long, long long> y;
 
-long long calScore(long long st, long long ed) {
-    // auto it1 = lower_bound(y.begin(), y.end(), st);
-    // auto it2 = upper_bound(y.begin(), y.end(), ed);
+long long getSum(long long st, long long ed) {
     auto it1 = y.lower_bound(st);
     auto it2 = y.upper_bound(ed);
-    long long total = 0;
+    long long cou=0;
     while(it1 != it2) {
-        total += it1->second;
+        cou += it1->second;
         it1++;
     }
-    return total;
+    return cou;
 }
 
 long long cook(long long st, long long ed) {
     if(st > ed) return 0;
-    if(ed-st < 2) {
-        return calScore(st, ed);
-    }
-    if(calScore(st, ed) == 0) return 0;
+    if(st+1 >= ed) return getSum(st, ed);
+    if(getSum(st, ed) == 0) return 0;
 
-    long long u = (ed-st+1)/3;
-    long long v = (ed-st+2)/3;
-    long long nst[3] = {st,     st+u,     st+u+v};
-    long long ned[3] = {st+u-1, st+u+v-1, ed};
-    long long a = cook(nst[0], ned[0]);
-    long long b = cook(nst[1], ned[1]);
-    long long c = cook(nst[2], ned[2]);
-    long long minmeth = min(min(a, b), c);
-    
-    long long ans = calScore(st, ed) + a + b + c - minmeth;
-    // cout << "st = " << st << ", ed=" << ed << ", ans=" << ans << "\n";
+    // cout << st << ", " << ed << "\n";
 
+    long long u = (ed-st+1) / 3;
+    long long v2 = (ed-st+2) / 3;
+    long long f1 = cook(st, st+u-1);
+    long long f2 = cook(st+u, st+u+v2-1);
+    long long f3 = cook(st+u+v2, ed);
+    long long worst = min(f1, min(f2, f3));
+    long long ans = f1+f2+f3 - worst + getSum(st, ed);
+   
     return ans;
 }
 
 int main() {
     ios_base::sync_with_stdio(false); cin.tie(0);
     cin >> w >> n;
-    y[1] = 0;
-    y[w] = 0;
     for(int i=0;i<n;i++) {
         long long a;
         cin >> a;
         y[a]++;
-        // y.push_back(a);
     }
-    // sort(y.begin(), y.end());
 
     long long ans = cook(1, w);
     cout << ans << "\n";

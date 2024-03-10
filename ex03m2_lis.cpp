@@ -1,38 +1,35 @@
 #include<bits/stdc++.h>
 using namespace std;
 int n;
-vector<int> v, vs;
-int dp[1005][1005];
+int dp[1010][1010];
+vector<int> v, v2;
 
-int lis(int iv, int ivs) {
-    if(iv < 0 || ivs < 0) return 0;
-    if(dp[iv][ivs] != -1) return dp[iv][ivs];
+int lis(int ia, int ib) {
+    if(ia < 0 || ib < 0) return 0;
+    if(dp[ia][ib] != -1) return dp[ia][ib];
 
-    int ans;
-    if(v[iv] == vs[ivs]) {
-        ans = lis(iv-1, ivs-1) + 1;
+    int ans = 0;
+    if(v[ia] == v2[ib]) {
+        ans = 1 + lis(ia-1, ib-1);
     } else {
-        int f1 = lis(iv-1, ivs);
-        int f2 = lis(iv, ivs-1);
-        ans = max(f1, f2);
+        ans = max(lis(ia-1, ib), lis(ia, ib-1));
     }
-    dp[iv][ivs] = ans;
 
+    dp[ia][ib] = ans;
     return ans;
 }
 
 int main() {
     cin >> n;
+    v.resize(n);
     for(int i=0;i<n;i++) {
-        int a;
-        cin >> a;
-        v.push_back(a);
+        cin >> v[i];
     }
     for(int i=0;i<=n;i++)
     for(int j=0;j<=n;j++)
-    dp[i][j] = -1;
-    vs = v;
-    sort(vs.begin(), vs.end());
+        dp[i][j] = -1;
+    v2 = v;
+    sort(v2.begin(), v2.end());
     int ans = lis(n-1, n-1);
     cout << ans << "\n";
 }

@@ -5,28 +5,29 @@ vector<int> v;
 
 int cook(int st, int ed) {
     if(st >= ed) return 0;
-    if(ed - st == 1) return max(0, v[st]*v[ed]);
-    if(dp[st][ed] != -INT_MAX) return dp[st][ed];
-    // cout << "st = " << st << ", ed=" << ed << "\n";
+    if(st+1 == ed) return max(v[st] * v[ed], 0);
+    if(dp[st][ed] != -1) return dp[st][ed];
 
-    int ans = max(cook(st+1, ed), cook(st, ed-1));
+    int ans = 0;
     for(int i=st+1;i<=ed;i++) {
-        ans = max(ans, v[st]*v[i] + cook(st+1, i-1) + cook(i+1, ed));
+        int musubi = max(v[st] * v[i], 0);
+        ans = max(ans, musubi + cook(st+1, i-1) + cook(i+1, ed));
+        ans = max(ans, cook(st+1, i) + cook(i+1, ed));
     }
+
     dp[st][ed] = ans;
+    // cout << "dp[" << st << "][" << ed << "] = " << dp[st][ed] << "\n";
     return ans;
 }
 
 int main() {
     cin >> n;
-    for(int i=0;i<n;i++) {
-        int a;
-        cin >> a;
-        v.push_back(a);
-    }
-    for(int i=0;i<=n;i++)
-    for(int j=0;j<=n;j++)
-    dp[i][j] = -INT_MAX;
+    v.resize(n);
+    for(int i=0;i<n;i++) cin >> v[i];
+    for(int i=0;i<n;i++) 
+    for(int j=0;j<n;j++)
+        dp[i][j] = -1;
+
     int ans = cook(0, n-1);
-    cout << ans << "\n";
+    cout << max(ans, 0) << "\n";
 }

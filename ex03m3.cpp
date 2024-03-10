@@ -1,24 +1,23 @@
 #include<bits/stdc++.h>
 using namespace std;
-int dp[10010]; //pos i has station
+int n, k;
+vector<int> v, dp; //min cost with last station is i
 
 int main() {
-    int n, k;
-    vector<int> v;
     cin >> n >> k;
+    v.resize(n);
+    dp.resize(n);
     for(int i=0;i<n;i++) {
-        int a;
-        cin >> a;
-        v.push_back(a);
+        cin >> v[i];
+        dp[i] = INT_MAX;
     }
     dp[0] = v[0];
-    for(int i=1;i<n;i++) dp[i] = INT_MAX;
 
     for(int i=1;i<n;i++) {
         for(int j=1;j<=2*k+1;j++) {
             int idx = i-j;
             if(idx < 0) {
-                if(i-k <= 0) //if plant at i can still reach 0 (there are no other previous stations)
+                if(i-k<=0)
                     dp[i] = min(dp[i], v[i]);
                 break;
             }
@@ -27,16 +26,7 @@ int main() {
     }
 
     int ans = INT_MAX;
-    for(int i=0;i<=k;i++) {
-        int idx = n-1-i;
-        if(idx < 0) break;
-        ans = min(ans, dp[idx]);
-    }
-
-    // for(int i=0;i<n;i++) {
-    //     cout << dp[i] << " ";
-    // }
-    // cout << "\n";
+    for(int i=max(0,n-1-k);i<n;i++) ans = min(ans, dp[i]);
 
     cout << ans << "\n";
 }
