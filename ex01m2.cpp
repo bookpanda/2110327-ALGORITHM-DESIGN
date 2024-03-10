@@ -1,44 +1,45 @@
 #include<bits/stdc++.h>
 using namespace std;
+int n, inv=0;
+vector<int> v; 
 
-int merge_sort(vector<int> &v, int st, int ed) {
-    if(st == ed) return 0;
+void merge_sort(int st, int ed) {
+    if(st >= ed) return;
+
     int mid = (st + ed) / 2;
-    int invl = merge_sort(v, st, mid);
-    int invr = merge_sort(v, mid+1, ed);
+    merge_sort(st, mid);
+    merge_sort(mid+1, ed);
 
     vector<int> tmp;
-    int li=st, ri=mid+1;
-    int inv = 0;
-    while(li<=mid && ri<=ed) {
-        if(v[li] <= v[ri]) {
-            tmp.push_back(v[li++]);
-        } else { // left > right
-            inv += mid - li + 1;
-            tmp.push_back(v[ri++]);
+    int lid = st, rid = mid+1;
+
+    while(lid<=mid && rid<=ed && lid < rid) {
+        if(v[lid] <= v[rid])
+            tmp.push_back(v[lid++]);
+        else {
+            tmp.push_back(v[rid++]);
+            inv += mid-lid+1;
         }
     }
-    while(li<=mid) tmp.push_back(v[li++]);
-    while(ri<=ed) tmp.push_back(v[ri++]);
+    while(lid<=mid) tmp.push_back(v[lid++]);
+    while(rid<=ed) tmp.push_back(v[rid++]);
+
     for(int i=st;i<=ed;i++) {
         v[i] = tmp[i-st];
     }
-    return inv + invl + invr;
+    return;
 }
 
 int main() {
-    int n;
     cin >> n;
-    vector<int> v;
+    v.resize(n);
     for(int i=0;i<n;i++) {
-        int a;
-        cin >> a;
-        v.push_back(a);
+        cin >> v[i];
     }
-    int inv = merge_sort(v, 0, n-1);
-    cout << inv << "\n";
 
-    // for(int i=0;i<v.size();i++) {
-    //     cout << v[i] << " ";
-    // }
+    merge_sort(0, n-1);
+    // for(auto x: v) {
+    //     cout << x << " ";
+    // } cout << "\n";
+    cout << inv << "\n";
 }

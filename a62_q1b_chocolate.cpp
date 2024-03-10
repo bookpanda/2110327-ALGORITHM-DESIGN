@@ -1,33 +1,23 @@
 #include<bits/stdc++.h>
 using namespace std;
-int k, dp[3000003];
-vector<int> v;
-
-int cook(int n) {
-    if(n == 0) return 1;
-    if(dp[n] != 0) return dp[n];
-
-    int ans = 0;
-    for(int i=0;i<k;i++) {
-        if(n - v[i] < 0) continue;
-        ans += cook(n-v[i]);
-        ans %= 1000003;
-    }
-    dp[n] = ans;
-    return ans;
-}
+int n, k, r=1000003;
+vector<int> v, dp;
 
 int main() {
-    int n;
     cin >> n >> k;
+    v.resize(k);
+    dp.resize(n+1);
     for(int i=0;i<k;i++) {
-        int a;
-        cin >> a;
-        v.push_back(a);
+        cin >> v[i];
     }
     dp[0] = 1;
-
-    int ans = cook(n);
-    cout << ans << "\n";
-
+    for(int i=1;i<=n;i++) {
+        dp[i] = 0; 
+        for(int j=0;j<k;j++) {
+            if(i-v[j] < 0) continue;
+            dp[i] += dp[i-v[j]];
+            dp[i] %= r;
+        }
+    }
+    cout << dp[n] << "\n";
 }

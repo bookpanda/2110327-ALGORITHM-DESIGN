@@ -1,31 +1,23 @@
 #include<bits/stdc++.h>
 using namespace std;
-int n, dp[100010];
-vector<int> v;
-
-int cook(int m) {
-    if(dp[m] != 0) return dp[m];
-
-    int ans = INT_MAX;
-    for(int i=0;i<n;i++) {
-        if(m-v[i] < 0) continue;
-        ans = min(ans, cook(m-v[i])+1);
-    }
-
-    dp[m] = ans;
-    return ans;
-}
+int n, m;
 
 int main() {
-    int m;
     cin >> n >> m;
+    vector<int> v(n);
+    vector<int> dp(m+1);
     for(int i=0;i<n;i++) {
-        int a;
-        cin >> a;
-        v.push_back(a);
-        dp[a] = 1;
+        cin >> v[i];
     }
+    dp[0] = 0;
+    for(int i=1;i<=m;i++) dp[i] = INT_MAX;
 
-    int ans = cook(m);
-    cout << ans << "\n";
+    for(int i=1;i<=m;i++) {
+        for(int j=0;j<n;j++) {
+            int bef = i-v[j];
+            if(bef < 0 || dp[bef] == INT_MAX) continue;
+            dp[i] = min(dp[i], dp[bef]+1);
+        }
+    }
+    cout << dp[m] << "\n";
 }
