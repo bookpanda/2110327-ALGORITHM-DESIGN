@@ -1,39 +1,42 @@
 #include<bits/stdc++.h>
 using namespace std;
+int n, m, k;
 vector<int> al[1010];
 
 int main() {
-    int n, e, k;
-    cin >> n >> e >> k;
-    for(int i=0;i<e;i++) {
+    cin >> n >> m >> k;
+    for(int i=0;i<m;i++) {
         int a, b;
         cin >> a >> b;
         al[a].push_back(b);
         al[b].push_back(a);
     }
-    int maxnode = -1;
-    for(int node=0;node<n;node++) {
+    int maxk=0;
+    for(int i=0;i<n;i++) {
+        vector<int> visited(n);
+        for(int i=0;i<n;i++) visited[i] = 0;
         queue<pair<int,int> > q;
-        vector<bool> visited(n);
-        for(int i=0;i<n;i++) visited[i] = false;
-        q.push({node, 0});
-        int cou = 1;
-        visited[node] = true;
+        q.push({i, 0});
+        visited[i] = 1;
+        int cou=0;
         while(!q.empty()) {
-            int cn = q.front().first;
-            int lvl = q.front().second;
+            int node = q.front().first;
+            int deg = q.front().second;
             q.pop();
-            for(int i=0;i<al[cn].size();i++) {
-                int nn = al[cn][i];
-                if(!visited[nn] && lvl+1 <= k) {
-                    visited[nn] = true;
-                    cou++;
-                    q.push({nn, lvl+1});
+            // cout << "node " << node << ", deg " << deg << "\n";
+            if(deg <= k) {
+                cou++;
+            }
+            for(int i=0;i<al[node].size();i++) {
+                int nn = al[node][i];
+                if(!visited[nn]) {
+                    visited[nn] = 1;
+                    q.push({nn, deg+1});
                 }
             }
         }
-        // cout << "node " << node << ", cou = " << cou << "\n";
-        maxnode = max(maxnode, cou);
+        // cout << "freind " << i << " has " << cou << "\n";
+        maxk = max(maxk, cou);
     }
-    cout << maxnode << "\n";
+    cout << maxk << "\n";
 }

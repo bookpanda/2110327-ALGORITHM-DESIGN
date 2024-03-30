@@ -1,37 +1,34 @@
 #include<bits/stdc++.h>
 using namespace std;
-int v, e;
+int n, m;
 vector<int> al[10010], visited;
 
+void dfs(int node) {
+    visited[node] = 1;
+    for(int i=0;i<al[node].size();i++) {
+        int nn = al[node][i];
+        if(!visited[nn]) {
+            dfs(nn);
+        }
+    }
+}
+
 int main() {
-    cin >> v >> e;
-    visited.resize(v);
-    for(int i=0;i<e;i++) {
+    cin >> n >> m;
+    for(int i=0;i<m;i++) {
         int a, b;
         cin >> a >> b;
         al[a].push_back(b);
         al[b].push_back(a);
     }
-    int cc = 0;
-    for(int node=1;node<=v;node++) {
-        if(visited[node]) continue;
-
-        queue<int> q;
-        cc++;
-        // cout << "start node " << node << "\n";
-        q.push(node);
-        visited[node] = true;
-        while(!q.empty()) {
-            int cn = q.front();
-            q.pop();
-            for(int i=0;i<al[cn].size();i++) {
-                int nn = al[cn][i];
-                if(!visited[nn]) {
-                    visited[nn] = true;
-                    q.push(nn);
-                }
-            }
+    visited.resize(n+1);
+    for(int i=0;i<=n;i++) visited[i] = 0;
+    int cou = 0;
+    for(int i=1;i<=n;i++) {
+        if(!visited[i]) {
+            cou++;
+            dfs(i);
         }
     }
-    cout << cc << "\n";
+    cout << cou << "\n";
 }

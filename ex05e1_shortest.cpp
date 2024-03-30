@@ -1,43 +1,38 @@
 #include<bits/stdc++.h>
 using namespace std;
-int g[505][505]; 
+int n, m;
+vector<string> v;
 
 int main() {
-    int r, c;
-    cin >> r >> c;
-    for(int i=0;i<r;i++) {
-        string s;
-        cin >> s;
-        for(int j=0;j<c;j++) {
-            if(s[j] == '.') g[i][j] = -1;
-            else g[i][j] = -2;
-        }
+    cin >> n >> m;
+    v.resize(n);
+    for(int i=0;i<n;i++) {
+        cin >> v[i];
     }
-    queue<pair<int, int> > q;
-    q.push({0, 0});
-    g[0][0] = 0;
-    int mx[] = {0, 0, 1, -1};
-    int my[] = {1, -1, 0, 0};
+    int dx[] = {1, -1, 0, 0};
+    int dy[] = {0, 0, 1, -1};
+    int ans = -1;
+    queue<pair<int, pair<int,int> > > q;
+    q.push({0, {0, 0}});
+    v[0][0] = 'X';
     while(!q.empty()) {
-        int cr = q.front().first;
-        int cc = q.front().second;
-        int val = g[cr][cc];
+        int dist = q.front().first;
+        int r = q.front().second.first;
+        int c = q.front().second.second;
         q.pop();
+        if(r==n-1 && c==m-1) {
+            ans = dist;
+            break;
+        }
+        // cout << r << ", " << c << "\n";
         for(int i=0;i<4;i++) {
-            int nr = cr + mx[i];
-            int nc = cc + my[i];
-            if(0<=nr && nr<r && 0<=nc && nc < c && g[nr][nc] == -1) {
-                g[nr][nc] = val + 1;
-                q.push({nr, nc});
+            int nr = r + dx[i];
+            int nc = c + dy[i];
+            if(0<=nr && nr<n && 0<=nc && nc<m && v[nr][nc] == '.') {
+                v[nr][nc] = 'X';
+                q.push({dist+1, {nr, nc}});
             }
         }
     }
-
-    // for(int i=0;i<r;i++) {
-    //     for(int j=0;j<c;j++) cout << g[i][j] << "\t";
-    //     cout << "\n";
-    // }
-
-    if(g[r-1][c-1] > -1) cout << g[r-1][c-1] << "\n";
-    else cout << "-1\n";
+    cout << ans << "\n";
 }
