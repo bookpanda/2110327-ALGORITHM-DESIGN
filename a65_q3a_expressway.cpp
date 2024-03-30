@@ -3,8 +3,13 @@ using namespace std;
 int n, am[705][705];
 
 int main() {
-    cin >> n >> am[1][2];
-    am[2][1] = am[1][2];
+    int a;
+    cin >> n >> a;
+    for(int i=1;i<=n;i++) {
+        for(int j=1;j<=n;j++) am[i][j] = 100000000;
+    }
+    am[1][2] = a;
+    am[2][1] = a;
 
     for(int y=3;y<=n;y++) {
         int m;
@@ -24,14 +29,14 @@ int main() {
             }
         }
 
-        cout << "\n yr " << k << "\n";
-        for(int i=1;i<=n;i++) {
-            for(int j=1;j<=n;j++) {
-                if(am[i][j] >= 10) cout << am[i][j] << " ";
-                else cout << am[i][j] << "  ";
-            } cout << "\n";
-        }
+        // cout << "\n yr " << k << "\n";
+        // for(int i=1;i<=n;i++) {
+        //     for(int j=1;j<=n;j++) {
+        //         if(am[i][j] >= 10) cout << am[i][j] << " ";
+        //         else cout << am[i][j] << "  ";
+        //     } cout << "\n";
+        // }
         if(k>=3)
-        cout << am[1][2] << "\n";
+        cout << am[1][2] << " ";
     }
 }
