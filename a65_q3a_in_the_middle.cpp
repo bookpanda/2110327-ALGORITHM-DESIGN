@@ -1,56 +1,44 @@
 #include<bits/stdc++.h>
 using namespace std;
-int n, t[5];
-vector<int> al[250010], visited[3];
+int n, t[3];
+vector<int> al[250100], visited[3];
 
 int main() {
     cin >> n;
-    for(int i=0;i<3;i++) {
-        cin >> t[i];
-        visited[i].resize(n+1);
-    }
+    for(int i=0;i<3;i++) cin >> t[i];
     for(int i=1;i<=n;i++) {
-        int a;
-        cin >> a;
-        for(int j=0;j<a;j++) {
-            int b;
-            cin >> b;
-            al[i].push_back(b);
+        int m;
+        cin >> m;
+        while(m--) {
+            int a;
+            cin >> a;
+            al[i].push_back(a);
         }
     }
+    for(int p=0;p<3;p++) {
+        int st = t[p];
+        visited[p].resize(n+1);
+        for(int i=0;i<=n;i++) visited[p][i] = INT_MAX;
 
-    for(int person=0;person<3;person++) {
-        int st = t[person];
         queue<pair<int, int> > q;
-        q.push({0, st});
-        visited[person][st] = 1;
-        // cout << "st = " << st << "\n";
-
+        q.push({st, 0});
+        visited[p][st] = 0;
         while(!q.empty()) {
-            int dist = q.front().first;
-            int node = q.front().second;
+            int node = q.front().first;
+            int dist = q.front().second;
             q.pop();
-            // cout << "node = " << node << "\n";
-
             for(int i=0;i<al[node].size();i++) {
                 int nn = al[node][i];
-                if(!visited[person][nn]) {
-                    visited[person][nn] = dist+1;
-                    q.push({dist+1, nn});
+                if(visited[p][nn] == INT_MAX) {
+                    visited[p][nn] = dist + 1;
+                    q.push({nn, dist+1});
                 }
             }
         }
     }
-
     int ans = INT_MAX;
     for(int i=1;i<=n;i++) {
-        int v1 = visited[0][i];
-        int v2 = visited[1][i];
-        int v3 = visited[2][i];
-        // cout << "v1 " << v1 << ", v2 " << v2 << ", v3 " << v3 << "\n";
-        if(v1 && v2 && v3) {
-            ans = min(ans, max(v1, max(v2, v3)));
-        }
+        ans = min(ans, max(visited[0][i], max(visited[1][i], visited[2][i])));
     }
     cout << ans << "\n";
 }

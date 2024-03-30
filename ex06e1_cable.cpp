@@ -1,7 +1,7 @@
 #include<bits/stdc++.h>
 using namespace std;
-int n, code[2010], p[2010], s[2010];
-vector<pair<long long, pair<int, int> > > edges;
+int n, p[1010], s[1010];
+vector<pair<int, pair<int, int> > > edges;
 
 int find(int x) {
     if(p[x] == x) return x;
@@ -21,30 +21,28 @@ void unionset(int x, int y) {
     p[fx] = fy;
 }
 
-
 int main() {
     cin >> n;
-    for(int i=0;i<n;i++) {
-        cin >> code[i];
+    for(int i=0;i<n-1;i++) {
+        for(int j=i+1;j<n;j++) {
+            int a;
+            cin >> a;
+            edges.push_back({a, {i, j}});
+        }
     }
+    sort(edges.begin(), edges.end());
     for(int i=0;i<n;i++) {
         p[i] = i;
         s[i] = 1;
     }
-    for(int i=0;i<n;i++) {
-        for(int j=i+1;j<n;j++) {
-            edges.push_back({-(code[i] ^ code[j]), {i, j}});
-        }
-    }
-    sort(edges.begin(), edges.end());
-    unsigned long long totalsum = 0;
+    int totalsum = 0;
     for(int i=0;i<edges.size();i++) {
-        long long w = -edges[i].first;
+        int w = edges[i].first;
         int a = edges[i].second.first;
         int b = edges[i].second.second;
-        // cout << a << ", " << b << " w= " << w << "\n";
         if(find(a) != find(b)) {
             unionset(a, b);
+            // cout << a << ", " << b << "\n";
             totalsum += w;
         }
     }

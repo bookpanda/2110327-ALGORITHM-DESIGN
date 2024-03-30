@@ -5,29 +5,29 @@ vector<int> al[1010], visited;
 
 int main() {
     cin >> n >> m >> k;
-    visited.resize(n);
     for(int i=0;i<m;i++) {
         int a, b;
         cin >> a >> b;
         al[a].push_back(b);
         al[b].push_back(a);
     }
+    visited.resize(n);
     queue<pair<int, int> > q;
     q.push({0, 0});
     visited[0] = 1;
-    int ans = 0;
+    int cou = 0;
     while(!q.empty()) {
-        int dist = q.front().first;
-        int node = q.front().second;
+        int node = q.front().first;
+        int dist = q.front().second;
         q.pop();
-        if(dist == k) ans++;
+        if(dist == k) cou++;
         for(int i=0;i<al[node].size();i++) {
             int nn = al[node][i];
-            if(!visited[nn] && dist+1 <= k) {
+            if(!visited[nn]) {
                 visited[nn] = 1;
-                q.push({dist+1, nn});
+                q.push({nn, dist+1});
             }
         }
     }
-    cout << ans << "\n";
+    cout << cou << "\n";
 }

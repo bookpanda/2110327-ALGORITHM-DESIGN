@@ -1,57 +1,57 @@
 #include<bits/stdc++.h>
 using namespace std;
-int n, a, b;
-int m[1010][1010], visited[1010][1010];
-queue<pair<int,pair<int,int> > > q;
+int n, str, stc;
+vector<int> al[50010];
+int mp[1010][1010];
 
 int main() {
-    cin >> n >> a >> b;
+    cin >> n >> str >> stc;
     for(int i=0;i<n;i++) {
-        int x, y;
-        cin >> x >> y;
-        m[x][y] = 1;
+        int r, c;
+        cin >> r >> c;
+        mp[r][c] = 2;
     }
-
-    q.push({1, {a, b}});
-    visited[a][b] = 1;
-
-    int dx[] = {1, -1, 0, 0};   
+    queue<pair<int,int> > q, q2;
+    int dx[] = {1, -1, 0, 0};
     int dy[] = {0, 0, 1, -1};
-    while(!q.empty()) {
-        int d = q.front().first;
-        int r = q.front().second.first;
-        int c = q.front().second.second;
-        q.pop();
-        // cout << "dig " << d << ", r=" << r << ", c=" << c << "\n";
+    q.push({str, stc});
+    mp[str][stc] = 1;
+    int cou = 0;
+    while(1) {
+        bool escape = false;
+        cout << "cou " << cou << "\n";
+        while(!q.empty()) {
+            int r = q.front().first;
+            int c = q.front().second;
+            q.pop();
+            for(int i=0;i<4;i++) {
+                int nr = r + dx[i];
+                int nc = c + dy[i];
 
-        for(int i=0;i<4;i++) {
-            int nr = r + dx[i];
-            int nc = c + dy[i];
-            if(1<=nr && nr<=1000 && 1<=nc && nc<=1000 && !visited[nr][nc]) {
-                if(m[nr][nc]) {
-                    // cout << "(" << nr << ", " << nc << ") = " << d+1 << "\n";
-                    visited[nr][nc] = d+1;
-                    q.push({d+1, {nr, nc}});
+                if(1<=nr && nr<=1000 && 1<=nc && nc<=1000) {
+                    if(mp[nr][nc]==0) {
+                        mp[nr][nc] = 1;
+                        q.push({nr, nc});
+                    } else if(mp[nr][nc] == 2) {
+                        mp[nr][nc] = 1;
+                        q2.push({nr, nc});
+                    }
                 } else {
-                    visited[nr][nc] = d;
-                    q.push({d, {nr, nc}});
+                    escape = true;
                 }
             }
         }
-    }
 
-    int ans = INT_MAX;
-    for(int i=1;i<=1000;i++) {
-        ans = min(ans, visited[i][1]);
-        ans = min(ans, visited[i][1000]);
-        ans = min(ans, visited[1][i]);
-        ans = min(ans, visited[1000][i]);
-    }
+        // for(int i=1;i<=10;i++) {
+        //     for(int j=1;j<=10;j++) {
+        //         cout << mp[i][j] << " ";
+        //     } cout << "\n";
+        // }
 
-    // for(int i=1;i<=10;i++) {
-    //     for(int j=1;j<=10;j++) {
-    //         cout << visited[i][j] << " ";
-    //     } cout << "\n";
-    // }
-    cout << ans-1 << "\n";
+        if(escape) break;
+        q = q2;
+        cou++;
+        while(!q2.empty()) q2.pop();
+    }
+    cout << cou << "\n";
 }
