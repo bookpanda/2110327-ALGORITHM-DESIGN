@@ -1,48 +1,46 @@
 #include<bits/stdc++.h>
 using namespace std;
-int n,e;
-vector<int> al[200010];
-vector<bool> visited;
+int n, m;
+vector<int> al[200010], visited;
 
 int main() {
-    cin >> n >> e;
-    visited.resize(n);
-    for(int i=0;i<n;i++) visited[i] = false;
-    for(int i=0;i<e;i++) {
+    cin >> n >> m;
+    for(int i=0;i<m;i++) {
         int a, b;
         cin >> a >> b;
         al[a].push_back(b);
         al[b].push_back(a);
     }
-
+    visited.resize(n);
     int cou = 0;
-    for(int node=0;node<n;node++) {
-        if(visited[node]) continue;
+    for(int i=0;i<n;i++) {
+        if(visited[i]) continue;
 
-        // cout << "node = " << node << "\n";
-        bool isLine = true;
-        queue<pair<int, int> > q;
-        q.push({node, -1});
-        visited[node] = true;
+        // cout << "st " << i << "\n";
+        queue<int> q;
+        q.push(i);
+        int deg[3] = {0, 0, 0};
+        bool isLine=true;
         while(!q.empty()) {
-            int cn = q.front().first;
-            int parent = q.front().second;
+            int node = q.front();
+            visited[node] = 1;
             q.pop();
-            if(al[cn].size() > 2) {
+            // cout << "node " << node << "\n";
+            if(al[node].size() > 2) {
                 isLine = false;
+                break;
             }
-            for(int i=0;i<al[cn].size();i++) {
-                int nn = al[cn][i];
+            deg[al[node].size()]++;
+            for(int j=0;j<al[node].size();j++) {
+                int nn = al[node][j];
                 if(!visited[nn]) {
-                    visited[nn] = true;
-                    q.push({nn, cn});
-                } else if(parent != nn) {
-                    isLine = false;
+                    q.push(nn);
                 }
             }
         }
-        // if(deg2 > 2) isLine = false;
-        if(isLine) cou++;
+        if(!isLine) continue;
+        if(deg[1] == 2 || (deg[1]==0 && deg[2]==0)) cou++;
+        //another way: check if visited node is not parent => not line
     }
     cout << cou << "\n";
 }
