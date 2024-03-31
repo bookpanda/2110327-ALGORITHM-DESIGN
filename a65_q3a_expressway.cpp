@@ -1,42 +1,42 @@
 #include<bits/stdc++.h>
 using namespace std;
-int n, am[705][705];
+int n, c[710][710];
 
 int main() {
-    int a;
-    cin >> n >> a;
+    cin >> n;
     for(int i=1;i<=n;i++) {
-        for(int j=1;j<=n;j++) am[i][j] = 100000000;
+        for(int j=1;j<=n;j++) {
+            c[i][j] = 1000000000;
+        }
     }
-    am[1][2] = a;
-    am[2][1] = a;
-
-    for(int y=3;y<=n;y++) {
+    cin >> c[1][2];
+    for(int i=3;i<=n;i++) {
         int m;
         cin >> m;
-        for(int i=0;i<m;i++) {
+        for(int j=0;j<m;j++) {
             int a, b;
             cin >> a >> b;
-            am[y][a] = b;
-            am[a][y] = b;
+            c[i][a] = b;
+            c[a][i] = b;
         }
-
     }
-    for(int k=1;k<=n;k++) {
+
+    for(int k=3;k<=n;k++) {
         for(int i=1;i<=n;i++) {
             for(int j=1;j<=n;j++) {
-                am[i][j] = min(am[i][j], am[i][k] + am[k][j]);
+                c[i][j] = min(c[i][j], c[i][k] + c[k][j]);
             }
         }
 
-        // cout << "\n yr " << k << "\n";
+        // cout << "c: \n";
         // for(int i=1;i<=n;i++) {
         //     for(int j=1;j<=n;j++) {
-        //         if(am[i][j] >= 10) cout << am[i][j] << " ";
-        //         else cout << am[i][j] << "  ";
+        //         if(c[i][j] < 10) cout << c[i][j] << "  ";
+        //         else cout << c[i][j] << " ";
         //     } cout << "\n";
         // }
-        if(k>=3)
-        cout << am[1][2] << " ";
+
+        cout << c[1][2] << " ";
     }
+
 }

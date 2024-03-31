@@ -1,43 +1,40 @@
 #include<bits/stdc++.h>
 using namespace std;
-int n, m;
+int n, m, mp[1010][1010], dp[1010][1010];
 
 int main() {
     cin >> n >> m;
-    vector<vector<int> > v(n, vector<int>(m));
-    vector<vector<int> > visited(n, vector<int>(m));
-    for(int i=0;i<n;i++)
-    for(int j=0;j<m;j++)
-        visited[i][j] = INT_MAX;
     for(int i=0;i<n;i++) {
         for(int j=0;j<m;j++) {
-            cin >> v[i][j];
+            cin >> mp[i][j];
         }
     }
-
-    priority_queue<pair<int, pair<int,int> > > pq;
+    for(int i=0;i<n;i++)
+    for(int j=0;j<m;j++)
+        dp[i][j] = INT_MAX;
+    
     int dx[] = {1, -1, 0, 0};
     int dy[] = {0, 0, 1, -1};
-    pq.push({0, {0, 0}});
-    visited[0][0] = 0;
-    while(!pq.empty()) {
-        int val = -pq.top().first;
-        int r = pq.top().second.first;
-        int c = pq.top().second.second;
-        pq.pop();
+    queue<pair<int, int> > q;
+    dp[0][0] = 0;
+    q.push({0, 0});
+    while(!q.empty()) {
+        int r = q.front().first;
+        int c = q.front().second;
+        q.pop();
         for(int i=0;i<4;i++) {
             int nr = r + dx[i];
             int nc = c + dy[i];
-            if(0<=nr && nr<n && 0<=nc && nc<m && visited[nr][nc] > val + v[nr][nc]) {
-                visited[nr][nc] = val + v[nr][nc];
-                pq.push({-(val + v[nr][nc]), {nr, nc}});
+            if(0<=nr && nr<n && 0<=nc && nc<m && dp[nr][nc] > dp[r][c] + mp[nr][nc]) {
+                dp[nr][nc] = dp[r][c] + mp[nr][nc];
+                q.push({nr, nc});
             }
         }
     }
 
     for(int i=0;i<n;i++) {
-        for(int j=0;j<m;j++) {
-            cout << visited[i][j] << " ";
-        } cout << "\n";
+        for(int j=0;j<m;j++)
+            cout << dp[i][j] << " ";
+        cout << "\n";
     }
 }

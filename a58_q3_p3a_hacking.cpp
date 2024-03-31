@@ -1,17 +1,15 @@
 #include<bits/stdc++.h>
 using namespace std;
-int n, m, k;
-int st[100010], t[100010];
-vector<int> al[100010], sp;
-
+int n, m, k, st[100010], c[100010];
+vector<int> al[100010];
+vector<int> visited;
 
 int main() {
     cin >> n >> m >> k;
-    sp.resize(n);
-    for(int i=0;i<n;i++) sp[i] = INT_MAX;
-
     for(int i=0;i<k;i++) cin >> st[i];
-    for(int i=0;i<n;i++) cin >> t[i];
+    for(int i=0;i<n;i++) cin >> c[i];
+    visited.resize(n);
+    for(int i=0;i<n;i++) visited[i] = INT_MAX;
     for(int i=0;i<m;i++) {
         int a, b;
         cin >> a >> b;
@@ -20,29 +18,23 @@ int main() {
     }
     priority_queue<pair<int, int> > pq;
     for(int i=0;i<k;i++) {
-        pq.push({-t[st[i]], st[i]});
-        sp[st[i]] = t[st[i]];
+        pq.push({-c[st[i]], st[i]});
+        visited[st[i]] = c[st[i]];
     }
     while(!pq.empty()) {
         int cost = -pq.top().first;
         int node = pq.top().second;
         pq.pop();
-        // cout << "node " << node << ", cost= " << cost << "\n";
-
         for(int i=0;i<al[node].size();i++) {
             int nn = al[node][i];
-            int newcost = cost + t[nn];
-            if(sp[nn] > newcost) {
-                sp[nn] = newcost;
-                pq.push({-newcost, nn});
+            if(visited[nn] > cost + c[nn]) {
+                visited[nn] = cost + c[nn];
+                pq.push({-(cost+c[nn]), nn});
             }
         }
     }
     int ans = 0;
-    for(int i=0;i<n;i++) {
-        ans = max(ans, sp[i]);
-        // cout << "sp[" << i << "] = " << sp[i] << "\n";
-    }
+    for(int i=0;i<n;i++) ans = max(ans, visited[i]);
     cout << ans << "\n";
     
 }
