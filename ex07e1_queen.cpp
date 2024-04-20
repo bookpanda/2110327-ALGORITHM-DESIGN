@@ -1,34 +1,39 @@
 #include<bits/stdc++.h>
 using namespace std;
-int n, row[15], col[15];
-int cou = 0;
+int n, ans=0;
+vector<int> row, col;
 
-bool check(int depth) {
-    for(int i=1;i<depth;i++) {
-        int rd = depth - i;
-        int cd = abs(row[depth] - row[i]);
-        if(rd == cd) return false;
-    }
+bool check(int r, int c) {
+    for(int i=1;i<r;i++) {
+        int difr = abs(r - i);
+        int difc = abs(c - row[i]);
+        if(difr == difc) return false;
+    } 
     return true;
 }
 
-void dfs(int r) {
+void cook(int r) {
+    // cout << "r = " << r << "\n";
     if(r == n+1) {
-        cou++;
+        ans++;
         return;
     }
-    for(int i=1;i<=n;i++) {
-        if(col[i] != 0) continue;
-        row[r] = i;
-        col[i] = r;
-        if(check(r)) dfs(r+1);
+
+    for(int c=1;c<=n;c++) {
+        if(col[c] != 0) continue;
+        if(!check(r, c)) continue;
+        row[r] = c;
+        col[c] = r;
+        cook(r+1);
+        col[c] = 0;
         row[r] = 0;
-        col[i] = 0;
     }
 }
 
 int main() {
     cin >> n;
-    dfs(1);
-    cout << cou << "\n";
+    row.resize(n+1);
+    col.resize(n+1);
+    cook(1);
+    cout << ans << "\n";
 }

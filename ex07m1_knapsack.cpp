@@ -1,61 +1,66 @@
 #include<bits/stdc++.h>
 using namespace std;
-double W, ans;
+double W, ans=0;
 int n;
 
 struct Item {
     double w, v;
+
     bool operator<(const Item &other) const {
-        return w > other.w;
+        return w < other.w;
     }
-} item[105], frac[105][105];
+};
+vector<Item> items;
+vector<vector<Item> > frac;
 
 bool compare(const Item &a, const Item &b) {
     return a.v*b.w > b.v*a.w;
 }
 
-double hrt(int step, double w) {
-    int i = step;
-    double sumP = 0;
-    while(i < n) {
-        if(w >= frac[step][i].w) {
-            w -= frac[step][i].w;
-            sumP += frac[step][i].v;
+double hrt(int idx, double w) {
+    double v = 0;
+    for(int i=idx;i<n;i++) {
+        if(w >= frac[idx][i].w) {
+            w -= frac[idx][i].w;
+            v += frac[idx][i].v;
         } else {
-            sumP += (frac[step][i].v / frac[step][i].w) * w;
+            v += (frac[idx][i].v / frac[idx][i].w) * w;
             break;
         }
-        i++;
     }
 
-    return sumP;
+    return v;
 }
 
-void knap(int step, double sumP, double sumW) {
+void cook(int idx, double sumW, double sumV) {
     if(sumW > W) return;
-    if(step == n) {
-        if(sumP > ans) ans = sumP;
+    if(hrt(idx, W-sumW) + sumV < ans) return; 
+    if(idx == n) {
+        ans = max(ans, sumV);
         return;
     }
-    if(hrt(step, W - sumW) + sumP < ans) return;
 
-    knap(step+1, sumP + item[step].v, sumW + item[step].w);
-    knap(step+1, sumP, sumW);
+    // cout << "start idx " << idx << ", w=" << sumW << ", v = " << ans << "\n";
+    cook(idx+1, sumW, sumV);
+    cook(idx+1, sumW+items[idx].w, sumV+items[idx].v);
 }
 
 int main() {
     cin >> W >> n;
-    for(int i=0;i<n;i++) cin >> item[i].v;
-    for(int i=0;i<n;i++) cin >> item[i].w;
-    sort(item, item+n);
+    items.resize(n);
+    frac.resize(n);
+    for(int i=0;i<n;i++) cin >> items[i].v;
+    for(int i=0;i<n;i++) cin >> items[i].w;
 
     for(int i=n-1;i>=0;i--) {
+        frac[i].resize(n);
         for(int j=i;j<n;j++) {
-            frac[i][j] = item[j];
+            frac[i][j].w = items[j].w;
+            frac[i][j].v = items[j].v;
         }
-        sort(frac[i]+i, frac[i]+n, compare);
+        sort(frac[i].begin()+i, frac[i].end(), compare);
     }
+    cook(0, 0, 0);
 
-    knap(0, 0.0, 0.0);
     cout << fixed << setprecision(4) << ans << "\n";
 }

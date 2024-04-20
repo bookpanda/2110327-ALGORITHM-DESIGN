@@ -1,68 +1,73 @@
 #include<bits/stdc++.h>
 using namespace std;
-int n, m;
-vector<int> al[110], visited, colored;
+int n, e, maxcolor=1;
+vector<int> al[55], visited;
 vector<vector<int> > bl;
-int highest=0;
 
-void dfs(int node, vector<int> &cc) {
+void dfs(int node, vector<int> &seq) {
     visited[node] = 1;
-    cc.push_back(node);
-
+    seq.push_back(node);
     for(auto nn: al[node]) {
         if(visited[nn]) bl[node].push_back(nn);
     }
 
     for(auto nn: al[node]) {
         if(visited[nn]) continue;
-        dfs(nn, cc);
+        dfs(nn, seq);
     }
-    return;
 }
 
-bool color(int idx, vector<int> &cc) {
-    if(idx >= cc.size()) return true;
+bool color(int idx, vector<int> &seq, vector<int> &c) {
+    if(idx == seq.size()) return true;
+    int node = seq[idx];
+    vector<bool> used(maxcolor+1, false);
 
-    int node = cc[idx];
-    vector<int> used(highest+1);
-    for(int i=0;i<highest+1;i++) used[i] = 0;
     for(auto nn: bl[node]) {
-        int c = colored[nn];
-        used[c] = 1;
+        used[c[nn]] = true;
     }
-    for(int i=1;i<=highest;i++) {
-        if(used[i]) continue;
-        colored[node] = i;
-
-        if(color(idx+1, cc)) return true;
+    for(int i=1;i<=maxcolor;i++) {
+        if(!used[i]) {
+            c[node] = i;
+            if(color(idx+1, seq, c)) return true;
+        }
     }
 
     return false;
 }
 
 int main() {
-    cin >> n >> m;
+    cin >> n >> e;
     visited.resize(n);
     bl.resize(n);
-    colored.resize(n);
-    for(int i=0;i<m;i++) {
+    for(int i=0;i<e;i++) {
         int a, b;
         cin >> a >> b;
         al[a].push_back(b);
         al[b].push_back(a);
     }
+
     for(int i=0;i<n;i++) {
-        if(!visited[i]) {
-            vector<int> cc;
-            dfs(i, cc);
-            // cout << "comp with " << i << ", size = " << cc.size() << "\n";
-            // for(int i=0;i<cc.size();i++) cout << cc[i] << " ";
-            // cout << "\n";
-            while(1) {
-                if(color(0, cc)) break;
-                highest++;
-            }
+        if(visited[i]) continue;
+        vector<int> seq;
+        bl.resize(n);
+        dfs(i, seq);
+
+        // cout << "seq : ";
+        // for(auto x: seq) {
+        //     cout << x << " ";
+        // } cout << "\n";
+        // for(int j=0;j<bl.size();j++) {
+        //     cout << "bl[" << j << "]: ";
+        //     for(int k=0;k<bl[j].size();k++) {
+        //         cout << bl[j][k] << " ";
+        //     }
+        //     cout << "\n";
+        // }
+        while(1) {
+            vector<int> c(n, 0);
+            if(!color(0, seq, c)) maxcolor++;
+            else break;
         }
     }
-    cout << highest << "\n";
+    cout << maxcolor << "\n";
 }
