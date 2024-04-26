@@ -1,29 +1,25 @@
 #include<bits/stdc++.h>
 using namespace std;
 int n;
-vector<int> st, ed;
-vector<pair<int, int > > v;
-
+vector<int> stv, edv;
+vector<pair<int, int> > v;
 
 int main() {
     cin >> n;
-    st.resize(n);
-    ed.resize(n);
-    for(int i=0;i<n;i++) {
-        cin >> st[i];
-    }
-    for(int i=0;i<n;i++) {
-        cin >> ed[i];
-        v.push_back({ed[i], st[i]});
-    }
+    stv.resize(n);
+    edv.resize(n);
+    for(int i=0;i<n;i++) cin >> stv[i];
+    for(int i=0;i<n;i++) cin >> edv[i];
+    for(int i=0;i<n;i++) v.push_back({edv[i], stv[i]});
     sort(v.begin(), v.end());
-
-    int last=-1, ans=0;
+    int cou=0, edt=-1;
     for(int i=0;i<n;i++) {
-        if(v[i].second >= last) {
-            last = v[i].first;
-            ans++;
+        int st = v[i].second;
+        int ed = v[i].first;
+        if(edt <= st) {
+            edt = ed;
+            cou++;
         }
     }
-    cout << ans << "\n";
+    cout << cou << "\n";
 }

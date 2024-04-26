@@ -1,46 +1,45 @@
 #include<bits/stdc++.h>
 using namespace std;
-int n, m, seq[1010], t[1010], qs[1010];
+int n, m;
+vector<int> seq, t, qs;
 
-int getSum(int st, int ed) {
+int calDist(int st, int ed) {
     if(st > ed) swap(st, ed);
-    if(st == 0) {
-        return min(qs[ed-1], qs[m-1]-qs[ed-1]);
-    }
-    return min(qs[ed-1]-qs[st-1], qs[m-1]-(qs[ed-1]-qs[st-1]));
+    if(st == ed) return 0;
+    if(st-1 < 0) return min(qs[ed-1], qs[m-1] - qs[ed-1]);
+    return min(qs[ed-1] - qs[st-1], qs[m-1] - (qs[ed-1] - qs[st-1]));
 }
 
 int main() {
     cin >> n >> m;
-    for(int i=0;i<m;i++) cin >> seq[i];
-    for(int i=0;i<m;i++) cin >> t[i];
-    qs[0] = t[0];
-    for(int i=1;i<m;i++) {
-        qs[i] = t[i] + qs[i-1]; //qs[m-1] = full circle
+    seq.resize(m);
+    qs.resize(m);
+    t.resize(m);
+    for(int i=0;i<m;i++) {
+        cin >> seq[i];
     }
-    // cout << "qs\n";
-    // for(int i=0;i<=m;i++) {
-    //     cout << qs[i] << " ";
-    // }cout << "\n";
-    while(n--) {
+    for(int i=0;i<m;i++) {
+        cin >> t[i];
+    }
+    qs[0] = t[0];
+    for(int i=1;i<m;i++) qs[i] = qs[i-1] + t[i]; //qs[n-1] = full loop
+    for(int i=0;i<n;i++) {
         int a, b;
+        int total = 0;
         cin >> a >> b;
-        int prev = seq[0];
-        int totalsum = 0;
-        for(int i=1;i<m;i++) {
-            int dest = seq[i];
-            int straight = getSum(prev, dest);
-            int portala = getSum(prev, a) + getSum(b, dest);
-            int portalb = getSum(prev, b) + getSum(a, dest);
-            // cout << "straight " << straight << ", a " << portala << ", b " << portalb << "\n";
-            totalsum += min(straight, min(portala, portalb));
-            prev = dest;
+
+        for(int j=0;j<m;j++) {
+            int curr = seq[j];
+            int dest = seq[(j+1)%m];
+
+            int direct = calDist(curr, dest);
+            int portala = calDist(curr, a) + calDist(b, dest);
+            int portalb = calDist(curr, b) + calDist(a, dest);
+            // cout << "direct: " << curr << "->" << dest << " = " << direct << "\n";
+            // cout << "portala: " << curr << "->" << a << " = " << calDist(curr,a) << ",  " << b << "->" << dest << " = " << calDist(b,dest) << "\n";
+            // cout << "portala: " << curr << "->" << b << " = " << calDist(curr,b) << ",  " << a << "->" << dest << " = " << calDist(a,dest) << "\n";
+            total += min(direct, min(portala, portalb));
         }
-        int dest = seq[0];
-        int straight = getSum(prev, dest);
-        int portala = getSum(prev, a) + getSum(b, dest);
-        int portalb = getSum(prev, b) + getSum(a, dest);
-        totalsum += min(straight, min(portala, portalb));
-        cout << totalsum << "\n";
+        cout << total << "\n";
     }
 }
