@@ -1,37 +1,39 @@
 #include<bits/stdc++.h>
 using namespace std;
-int n, m, t;
-int v[505][505];
+int n, m, T, area[510][510];
 
 int main() {
-    cin >> n >> m >> t;
-    int infected=0;
-    queue<pair<int, pair<int,int> > > q;
+    cin >> n >> m >> T;
+    queue<pair<int, pair<int, int> > > q;
+    int cou = 0;
     for(int i=0;i<n;i++) {
         for(int j=0;j<m;j++) {
-            cin >> v[i][j];
-            if(v[i][j] == 1) {
-                infected++;
+            cin >> area[i][j];
+            if(area[i][j] == 1) {
                 q.push({0, {i, j}});
+                cou++;
             }
         }
     }
+
     int dx[] = {1, -1, 0, 0};
     int dy[] = {0, 0, 1, -1};
     while(!q.empty()) {
-        int d = q.front().first;
         int r = q.front().second.first;
         int c = q.front().second.second;
+        int t = q.front().first;
         q.pop();
+
         for(int i=0;i<4;i++) {
             int nr = r + dx[i];
             int nc = c + dy[i];
-            if(d+1<=t && 0<=nr && nr<n && 0<=nc && nc<m && v[nr][nc] == 0) {
-                v[nr][nc] = 1;
-                infected++;
-                q.push({d+1, {nr, nc}});
+            if(0<=nr && nr<n && 0<=nc && nc<m && area[nr][nc] == 0 && t+1<=T) {
+                area[nr][nc] = 1;
+                q.push({t+1, {nr, nc}});
+                cou++;
             }
         }
     }
-    cout << infected << "\n";
+
+    cout << cou << "\n";
 }

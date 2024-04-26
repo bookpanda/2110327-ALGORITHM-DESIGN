@@ -1,6 +1,6 @@
 #include<bits/stdc++.h>
 using namespace std;
-int n, m, k;
+int n, m, k, cou=0;
 vector<int> al[1010], visited;
 
 int main() {
@@ -15,18 +15,16 @@ int main() {
     queue<pair<int, int> > q;
     q.push({0, 0});
     visited[0] = 1;
-    int cou = 0;
     while(!q.empty()) {
         int node = q.front().first;
-        int dist = q.front().second;
+        int lvl = q.front().second;
         q.pop();
-        if(dist == k) cou++;
-        for(int i=0;i<al[node].size();i++) {
-            int nn = al[node][i];
-            if(!visited[nn]) {
-                visited[nn] = 1;
-                q.push({nn, dist+1});
-            }
+        if(lvl == k) cou++;
+        // cout << node << ", " << lvl << "\n";
+        for(auto nn: al[node]) {
+            if(visited[nn]) continue;
+            q.push({nn, lvl+1});
+            visited[nn] = 1;
         }
     }
     cout << cou << "\n";
