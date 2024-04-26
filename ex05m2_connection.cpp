@@ -11,32 +11,31 @@ int main() {
         al[a].push_back(b);
         al[b].push_back(a);
     }
-    int maxk=0;
+    int ans = 0;
     for(int i=0;i<n;i++) {
-        vector<int> visited(n);
-        for(int i=0;i<n;i++) visited[i] = 0;
-        queue<pair<int,int> > q;
+        vector<int> visited(n, 0);
+        queue<pair<int, int> > q;
         q.push({i, 0});
         visited[i] = 1;
-        int cou=0;
+        int cou = 0;
         while(!q.empty()) {
             int node = q.front().first;
-            int deg = q.front().second;
+            int lvl = q.front().second;
             q.pop();
-            // cout << "node " << node << ", deg " << deg << "\n";
-            if(deg <= k) {
+            // cout << node << ", " << lvl << "\n";
+
+            if(lvl <= k) {
                 cou++;
             }
-            for(int i=0;i<al[node].size();i++) {
-                int nn = al[node][i];
-                if(!visited[nn]) {
-                    visited[nn] = 1;
-                    q.push({nn, deg+1});
-                }
+            for(auto nn: al[node]) {
+                if(visited[nn]) continue;
+                q.push({nn, lvl+1});
+                visited[nn] = 1;
             }
         }
-        // cout << "freind " << i << " has " << cou << "\n";
-        maxk = max(maxk, cou);
+        ans = max(ans, cou);
+        // cout << "start " << i << ", cou = " << cou << "\n";
     }
-    cout << maxk << "\n";
+
+    cout << ans << "\n";
 }

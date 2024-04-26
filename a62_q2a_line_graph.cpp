@@ -1,7 +1,19 @@
 #include<bits/stdc++.h>
 using namespace std;
 int n, m;
-vector<int> al[200010], visited;
+vector<int> al[100010], visited;
+
+bool dfs(int node, int prev) {
+    visited[node] = 1;
+    if(al[node].size() > 2) return false;
+    for(auto nn: al[node]) {
+        if(nn != prev && visited[nn]) return false;
+        if(visited[nn]) continue;
+        if(!dfs(nn, node)) return false;
+    }
+
+    return true;
+}
 
 int main() {
     cin >> n >> m;
@@ -11,36 +23,13 @@ int main() {
         al[a].push_back(b);
         al[b].push_back(a);
     }
+
     visited.resize(n);
-    int cou = 0;
+    int line=0;
     for(int i=0;i<n;i++) {
         if(visited[i]) continue;
-
-        // cout << "st " << i << "\n";
-        queue<int> q;
-        q.push(i);
-        int deg[3] = {0, 0, 0};
-        bool isLine=true;
-        while(!q.empty()) {
-            int node = q.front();
-            visited[node] = 1;
-            q.pop();
-            // cout << "node " << node << "\n";
-            if(al[node].size() > 2) {
-                isLine = false;
-                break;
-            }
-            deg[al[node].size()]++;
-            for(int j=0;j<al[node].size();j++) {
-                int nn = al[node][j];
-                if(!visited[nn]) {
-                    q.push(nn);
-                }
-            }
-        }
-        if(!isLine) continue;
-        if(deg[1] == 2 || (deg[1]==0 && deg[2]==0)) cou++;
-        //another way: check if visited node is not parent => not line
+        if(dfs(i, -1)) line++;
     }
-    cout << cou << "\n";
+
+    cout << line << "\n";
 }

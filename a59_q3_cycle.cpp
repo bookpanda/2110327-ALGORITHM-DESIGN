@@ -1,16 +1,17 @@
 #include<bits/stdc++.h>
 using namespace std;
 int n, ans;
-vector<int> al[100100], visited;
+vector<int> al[100100], visited, tag;
 
-void dfs(int node) {
+void dfs(int node, int prev, int lvl) {
+    visited[node] = 1;
+    tag[node] = lvl;
     for(auto nn: al[node]) {
-        if(!visited[nn]) {
-            visited[nn] = visited[node] + 1;
-            dfs(nn);
-        } else if(visited[nn] != visited[node]-1) {
-            ans = visited[nn] - visited[node] + 1;
+        if(nn != prev && visited[nn]) {
+            ans = abs(tag[nn] - lvl)+1;
         }
+        if(visited[nn]) continue;
+        dfs(nn, node, lvl+1);
     }
 }
 
@@ -23,8 +24,8 @@ int main() {
         al[b].push_back(a);
     }
     visited.resize(n);
-    for(int i=0;i<n;i++) visited[i] = 0;
-    visited[0] = 1;
-    dfs(0);
+    tag.resize(n);
+    dfs(0, -1, 0);
+
     cout << ans << "\n";
 }

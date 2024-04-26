@@ -5,11 +5,9 @@ vector<int> al[10010], visited;
 
 void dfs(int node) {
     visited[node] = 1;
-    for(int i=0;i<al[node].size();i++) {
-        int nn = al[node][i];
-        if(!visited[nn]) {
-            dfs(nn);
-        }
+    for(auto nn: al[node]) {
+        if(visited[nn]) continue;
+        dfs(nn);
     }
 }
 
@@ -22,13 +20,11 @@ int main() {
         al[b].push_back(a);
     }
     visited.resize(n+1);
-    for(int i=0;i<=n;i++) visited[i] = 0;
     int cou = 0;
     for(int i=1;i<=n;i++) {
-        if(!visited[i]) {
-            cou++;
-            dfs(i);
-        }
+        if(visited[i]) continue;
+        dfs(i);
+        cou++;
     }
     cout << cou << "\n";
 }
