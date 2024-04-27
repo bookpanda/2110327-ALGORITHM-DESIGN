@@ -1,41 +1,42 @@
 #include<bits/stdc++.h>
 using namespace std;
-int n, m, s, dp[110];
-vector<pair<int, pair<int,int> > > edges;
+int n, m, st;
+vector<pair<int, pair<int, int> > > edges;
+vector<int> sp;
 
 int main() {
-    cin >> n >> m >> s;
+    cin >> n >> m >> st;
+    sp.resize(n);
+    for(int i=0;i<n;i++) sp[i] = 9999999;
     for(int i=0;i<m;i++) {
-        int a, b, c;
-        cin >> a >> b >> c;
-        edges.push_back({c, {a, b}});
+        int a, b, w;
+        cin >> a >> b >> w;
+        edges.push_back({w, {a, b}});
     }
-    for(int i=0;i<n;i++) {
-            dp[i]= 1000000000;
-    }
-    dp[s] = 0;
 
-    
-    for(int i=0;i<n;i++) {
-        for(int j=0;j<m;j++) {
-            int w = edges[j].first;
+    sp[st] = 0;
+    for(int i=0;i<n-1;i++) {
+        for(int j=0;j<edges.size();j++) {
             int a = edges[j].second.first;
             int b = edges[j].second.second;
-            dp[b] = min(dp[b], dp[a] + w);
+            int w = edges[j].first;
+            if(sp[b] > sp[a] + w) {
+                sp[b] = sp[a] + w;
+            }
         }
     }
 
-    for(int i=0;i<m;i++) {
-        int w = edges[i].first;
-        int a = edges[i].second.first;
-        int b = edges[i].second.second;
-        if(dp[b] > dp[a] + w) {
-            cout << "-1\n";
-            return 0;
+    bool negcycle = false;
+    for(int j=0;j<edges.size();j++) {
+        int a = edges[j].second.first;
+        int b = edges[j].second.second;
+        int w = edges[j].first;
+        if(sp[b] > sp[a] + w) {
+            negcycle = true;
+            break;
         }
     }
 
-    for(int i=0;i<n;i++) {
-        cout << dp[i] << " ";
-    }
+    if(negcycle) cout << "-1\n";
+    else for(int i=0;i<n;i++) cout << sp[i] << " ";
 }

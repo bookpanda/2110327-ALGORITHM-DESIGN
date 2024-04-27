@@ -1,38 +1,33 @@
 #include<bits/stdc++.h>
 using namespace std;
 int n, m;
-vector<int> al[1010];
-vector<int> dep, dep2;
+vector<int> req, al[1010];
 
 int main() {
     cin >> n >> m;
-    dep.resize(n+1);
+    req.resize(n+1);
     for(int i=0;i<m;i++) {
         int a, b;
         cin >> a >> b;
+        req[b]++;
         al[a].push_back(b);
-        dep[b]++;
     }
-    // for(int i=1;i<=n;i++) {
-    //     cout << "dep[" << i << "] = " << dep[i] << "\n";
-    // }
-    for(int turn=0;turn<5;turn++) {
-        vector<int> v(n);
-        dep2 = dep;
-        bool muri = false;
-        for(int i=0;i<n;i++) {
-            cin >> v[i];
-            // cout << "node " << v[i] << " dep=" << dep[v[i]] << "\n";
-            if(dep2[v[i]] > 0) muri = true;
-            for(int j=0;j<al[v[i]].size();j++) {
-                int nn = al[v[i]][j];
-                dep2[nn]--;
+    for(int t=0;t<5;t++) {
+        vector<int> tmp(n);
+        for(int i=0;i<n;i++) cin >> tmp[i];
+        bool success = true;
+        vector<int> req2(req);
+        for(auto step: tmp) {
+            if(req2[step] > 0) {
+                success = false;
+                break;
+            }
+            for(auto nn: al[step]) {
+                req2[nn]--;
             }
         }
-        if(muri) {
-            cout << "FAIL\n";
-        } else {
-            cout << "SUCCESS\n";
-        }
+
+        if(success) cout << "SUCCESS\n";
+        else cout << "FAIL\n";
     }
 }

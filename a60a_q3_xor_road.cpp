@@ -1,18 +1,18 @@
 #include<bits/stdc++.h>
 using namespace std;
-int n, code[2010], p[2010], s[2010];
-vector<pair<long long, pair<int, int> > > edges;
+int n, val[2010], p[2010], s[2010];
+vector<pair<int, pair<int, int> > > edges;
 
-int find(int x) {
+int findP(int x) {
     if(p[x] == x) return x;
-    p[x] = find(p[x]);
+    p[x] = findP(p[x]);
     return p[x];
 }
 
-void unionset(int x, int y) {
-    int fx = find(x);
-    int fy = find(y);
-    if(s[fx] > s[fy]) {
+void unionSet(int x, int y) {
+    int fx = findP(x);
+    int fy = findP(y);
+    if(s[fx] >= s[fy]) {
         s[fx] += s[fy];
         p[fy] = fx;
         return;
@@ -21,32 +21,31 @@ void unionset(int x, int y) {
     p[fx] = fy;
 }
 
-
 int main() {
     cin >> n;
+    for(int i=0;i<n;i++) cin >> val[i];
     for(int i=0;i<n;i++) {
-        cin >> code[i];
+        for(int j=i+1;j<n;j++) {
+            edges.push_back({val[i] ^ val[j], {i, j}});
+        }
     }
+    sort(edges.begin(), edges.end());
+    reverse(edges.begin(), edges.end());
     for(int i=0;i<n;i++) {
         p[i] = i;
         s[i] = 1;
     }
-    for(int i=0;i<n;i++) {
-        for(int j=i+1;j<n;j++) {
-            edges.push_back({-(code[i] ^ code[j]), {i, j}});
-        }
-    }
-    sort(edges.begin(), edges.end());
-    unsigned long long totalsum = 0;
+
+    unsigned long long sum = 0;
     for(int i=0;i<edges.size();i++) {
-        long long w = -edges[i].first;
         int a = edges[i].second.first;
         int b = edges[i].second.second;
-        // cout << a << ", " << b << " w= " << w << "\n";
-        if(find(a) != find(b)) {
-            unionset(a, b);
-            totalsum += w;
+        int w = edges[i].first;
+        if(findP(a) != findP(b)) {
+            unionSet(a, b);
+            sum += w;
         }
     }
-    cout << totalsum << "\n";
+
+    cout << sum << "\n";
 }

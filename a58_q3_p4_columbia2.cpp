@@ -5,62 +5,52 @@ int n, m;
 int main() {
     cin >> n >> m;
     vector<vector<int> > v(n, vector<int>(m));
-    vector<vector<vector<int> > > dp(n, vector<vector<int> >(m, vector<int>(3)));
+    vector<vector<vector<int> > > sp(n, vector<vector<int> >(m, vector<int>(3)));
     for(int i=0;i<n;i++) {
         for(int j=0;j<m;j++) {
             cin >> v[i][j];
+            for(int k=0;k<3;k++) sp[i][j][k] = 9999999;
         }
     }
-    for(int i=0;i<n;i++) {
-        for(int j=0;j<m;j++)
-        for(int k=0;k<3;k++)
-            dp[i][j][k] = INT_MAX;
-    }
 
-    int dx[] = {1, -1, 0, 0, 0};
-    int dy[] = {0, 0, 1, -1, 0};
-    queue<pair<int, pair<int, int> > > q;
-    q.push({0, {0, 0}});
-    dp[0][0][0] = 0;
-    while(!q.empty()) {
-        // int cost = q.front().first.first;
-        int tear = q.front().first;
-        int r = q.front().second.first;
-        int c = q.front().second.second;
-        q.pop();
+    int dx[] = {0, 0, 1, -1, 0};
+    int dy[] = {1, -1, 0, 0, 0};
+    priority_queue<pair<pair<int, int>, pair<int, int> > > pq;
+    pq.push({{0, 0}, {0, 0}});
+    sp[0][0][0] = 0;
+    while(!pq.empty()) {
+        int w = -pq.top().first.first;
+        int t = pq.top().first.second;
+        int r = pq.top().second.first;
+        int c = pq.top().second.second;
+        pq.pop();
+
         for(int i=0;i<4;i++) {
             int nr = r + dx[i];
             int nc = c + dy[i];
-            if(0<=nr && nr<n && 0<=nc && nc<m) {
-                int newval = dp[r][c][tear] + v[nr][nc];
-                if(dp[nr][nc][tear] > newval) {
-                    dp[nr][nc][tear] = newval;
-                    q.push({tear, {nr, nc}});
-                }
+            if(0<=nr && nr<n && 0<=nc && nc<m && sp[nr][nc][t] > w + v[nr][nc]) {
+                pq.push({{-(w + v[nr][nc]), t}, {nr, nc}});
+                sp[nr][nc][t] = w + v[nr][nc];
             }
         }
 
-        if(tear<2)
+        if(t<2)
         for(int i=0;i<5;i++) {
             for(int j=0;j<5;j++) {
                 int nr = r + dx[i] + dx[j];
                 int nc = c + dy[i] + dy[j];
-                if(0<=nr && nr<n && 0<=nc && nc<m) {
-                    int newval = dp[r][c][tear];
-                    if(dp[nr][nc][tear+1] > newval) {
-                        dp[nr][nc][tear+1] = newval;
-                        q.push({tear+1, {nr, nc}});
-                    }
+                if(0<=nr && nr<n && 0<=nc && nc<m && sp[nr][nc][t+1] > w) {
+                    pq.push({{-(w), t+1}, {nr, nc}});
+                    sp[nr][nc][t+1] = w;
                 }
             }
         }
     }
-    
+
     for(int i=0;i<n;i++) {
         for(int j=0;j<m;j++) {
-            cout << min(dp[i][j][0], min(dp[i][j][1], dp[i][j][2])) << " ";
+            cout << min(sp[i][j][0], min(sp[i][j][1], sp[i][j][2])) << " ";
         }
         cout << "\n";
     }
-
 }
