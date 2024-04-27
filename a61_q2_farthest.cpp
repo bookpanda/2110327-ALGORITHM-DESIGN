@@ -1,35 +1,36 @@
 #include<bits/stdc++.h>
 using namespace std;
-int n, am[1010][1010], visited[1010];
+int n, am[1010][1010], sp[1010];
 
 int main() {
     cin >> n;
-    for(int i=1;i<=n;i++) {
-        for(int j=1;j<=n;j++) {
+    for(int i=0;i<n;i++) {
+        for(int j=0;j<n;j++) {
             cin >> am[i][j];
         }
     }
-    for(int i=2;i<=n;i++) visited[i] = INT_MAX;
+    for(int i=0;i<n;i++) sp[i] = 999999;
+    sp[0] = 0;
 
     priority_queue<pair<int, int> > pq;
-    pq.push({0, 1});
+    pq.push({0, 0});
     while(!pq.empty()) {
-        int cost = -pq.top().first;
+        int w = -pq.top().first;
         int node = pq.top().second;
         pq.pop();
-        for(int i=1;i<=n;i++) {
-            if(i == node || am[node][i] == -1) continue;
-            int newcost = cost + am[node][i];
-            if(visited[i] > newcost) {
-                visited[i] = newcost;
-                pq.push({-newcost, i});
+
+        for(int i=0;i<n;i++) {
+            if(i==node || am[node][i] < 1) continue;
+            if(sp[i] > sp[node] + am[node][i]) {
+                sp[i] = sp[node] + am[node][i];
+                pq.push({-(sp[node] + am[node][i]), i});
             }
         }
     }
-    int ans = 0;
-    for(int i=1;i<=n;i++) {
-        ans = max(ans, visited[i]);
+    int ans = -INT_MAX;
+    for(int i=1;i<n;i++) {
+        ans = max(ans, sp[i]);
     }
-    if(ans == INT_MAX) cout << "-1\n";
+    if(ans == 999999) cout << -1;
     else cout << ans << "\n";
 }

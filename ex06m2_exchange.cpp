@@ -1,42 +1,45 @@
 #include<bits/stdc++.h>
 using namespace std;
-int t;
+int k, n;
 
 int main() {
-    cin >> t;
-    while(t--) {
-        int n;
+    cin >> k;
+    while(k--) {
         cin >> n;
-        double mp[510][510];
+        double table[n][n], fw[n][n];
         for(int i=0;i<n;i++) {
             for(int j=0;j<n;j++) {
-                cin >> mp[i][j];
+                cin >> table[i][j];
+                fw[i][j] = table[i][j];
             }
         }
 
-        for(int k=0;k<n;k++) {
+        for(int a=0;a<n;a++) {
             for(int i=0;i<n;i++) {
                 for(int j=0;j<n;j++) {
-                    if(mp[i][j] < mp[i][k] * mp[k][j]) {
-                        mp[i][j] = mp[i][k] * mp[k][j];
+                    if(fw[i][j] < fw[i][a] * fw[a][j]) {
+                        fw[i][j] = fw[i][a] * fw[a][j];
                     }
                 }
             }
-
-            // cout << "round " << k << "\n";
+            // cout << a << " as middle:\n";
             // for(int i=0;i<n;i++) {
-            //     for(int j=0;j<n;j++) cout << mp[i][j] << " ";
+            //     for(int j=0;j<n;j++) {
+            //         if(fw[i][j] < 10) cout << " ";
+            //         cout << fw[i][j] << " ";
+            //     }
             //     cout << "\n";
             // }
         }
 
-        bool isProfit = false;
+        bool profit = false;
         for(int i=0;i<n;i++) {
-            for(int j=0;j<n;j++) {
-                if(mp[i][j] * mp[j][i] > 1) isProfit = true;
+            if(fw[i][i] > 1) {
+                profit = true;
+                break;
             }
         }
-        if(isProfit) cout << "YES\n";
+        if(profit) cout << "YES\n";
         else cout << "NO\n";
     }
 }
