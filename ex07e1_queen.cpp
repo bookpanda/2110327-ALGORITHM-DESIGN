@@ -1,39 +1,40 @@
 #include<bits/stdc++.h>
 using namespace std;
-int n, ans=0;
-vector<int> row, col;
+int n, cou = 0, r2c[15], c2r[15];
 
 bool check(int r, int c) {
     for(int i=1;i<r;i++) {
-        int difr = abs(r - i);
-        int difc = abs(c - row[i]);
+        int difr = abs(i - r);
+        int difc = abs(r2c[i] - c);
         if(difr == difc) return false;
-    } 
+    }
+
     return true;
 }
 
 void cook(int r) {
-    // cout << "r = " << r << "\n";
     if(r == n+1) {
-        ans++;
+        cou++;
         return;
     }
+    // cout << "r = " << r << "\n";
+    // cout << "r2c : ";
+    // for(int i=1;i<r;i++) {
+    //     cout << r2c[i] << " ";
+    // } cout << "\n";
 
     for(int c=1;c<=n;c++) {
-        if(col[c] != 0) continue;
-        if(!check(r, c)) continue;
-        row[r] = c;
-        col[c] = r;
+        if(c2r[c] != 0 || !check(r, c)) continue;
+        r2c[r] = c;
+        c2r[c] = r;
         cook(r+1);
-        col[c] = 0;
-        row[r] = 0;
+        r2c[r] = 0;
+        c2r[c] = 0;
     }
 }
 
 int main() {
     cin >> n;
-    row.resize(n+1);
-    col.resize(n+1);
     cook(1);
-    cout << ans << "\n";
+    cout << cou << "\n";
 }

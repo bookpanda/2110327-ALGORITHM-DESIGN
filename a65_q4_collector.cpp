@@ -1,61 +1,55 @@
 #include<bits/stdc++.h>
 using namespace std;
-int n, k, ans=INT_MAX;
-const int MAXBOOKS = 1005;
-using BookBits = bitset<MAXBOOKS>;
+int n, k, ans = INT_MAX;
+using BookBits = bitset<1010>;
 struct Vendor {
-    int p, m;
+    int price, amount;
     BookBits books;
 
-    bool operator<(const Vendor &other) const { //who comes first
-        return p > other.p;
-    }
-
-    void print() {
-        cout << "vendor p: " << p << ", " << m << " books: "; 
-        for(int i=1;i<=1000;i++) {
-            if(books[i]) cout << i << " ";
-        }
-        cout << "\n";
+    bool operator<(const Vendor &other) {
+        return books.count() > other.books.count();
     }
 };
-vector<Vendor> vendor;
+vector<Vendor> vendors;
 vector<BookBits> tail;
 
-void cook(int vid, int price, BookBits books) {
-    if((books | tail[vid]).count() < n) return;
-    // cout << vid << ", p " << price << ", book cou=" << books.count() << "\n";
+void cook(int idx, BookBits books, int price) {
+    if((books | tail[idx]).count() < n) return;
     if(books.count() == n) {
         ans = min(ans, price);
         return;
     }
-    if(vid == k) return;
+    if(idx == k) return;
+    // cout << "idx " << idx << ", price" << price << "\n";
+    // for(int i=1;i<=n;i++) {
+    //     cout << books[i];
+    // } cout << "\n\n";
 
-    BookBits newBooks = books | vendor[vid].books;
-    int newPrice = price+vendor[vid].p; 
-    if(newPrice < ans) cook(vid+1, newPrice, newBooks);
-
-    cook(vid+1, price, books);
+    BookBits newBooks = books | vendors[idx].books;
+    int newPrice = price + vendors[idx].price;
+    if(newPrice < ans) cook(idx+1, newBooks, newPrice);
+    cook(idx+1, books, price);
 }
 
 int main() {
     cin >> n >> k;
-    vendor.resize(k);
+    vendors.resize(k);
     tail.resize(k);
     for(int i=0;i<k;i++) {
-        cin >> vendor[i].p >> vendor[i].m;
-        for(int j=0;j<vendor[i].m;j++) {
+        cin >> vendors[i].price >> vendors[i].amount;
+        for(int j=0;j<vendors[i].amount;j++) {
             int b;
             cin >> b;
-            vendor[i].books[b] = 1;
+            vendors[i].books[b] = 1;
         }
     }
-    sort(vendor.begin(), vendor.end());
-    // for(int i=0;i<k;i++) vendor[i].print();
-    tail[k-1] = vendor[k-1].books;
+    sort(vendors.begin(), vendors.end());
+    
+    tail[k-1] = vendors[k-1].books;
     for(int i=k-2;i>=0;i--) {
-        tail[i] = tail[i+1] | vendor[i].books;
+        tail[i] = tail[i+1] | vendors[i].books;
     }
+
     cook(0, 0, 0);
     cout << ans << "\n";
 }

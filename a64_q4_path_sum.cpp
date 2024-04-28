@@ -1,44 +1,42 @@
 #include<bits/stdc++.h>
 using namespace std;
-int n, m;
-vector<int> k;
-int visited[25][20005], ans[20005];
+int n, m, k[10], visited[20005][25];
 vector<pair<int, int> > al[25];
+int canCost[20010];
 
 int main() {
-    k.resize(8);
     cin >> n >> m;
-    for(int i=0;i<8;i++) {
-        cin >> k[i];
-    }
+    for(int i=0;i<8;i++) cin >> k[i];
     for(int i=0;i<m;i++) {
         int a, b, w;
         cin >> a >> b >> w;
-        al[a].push_back({w, b});
-        al[b].push_back({w, a});
+        al[a].push_back({b, w});
+        al[b].push_back({a, w});
     }
     queue<pair<int, pair<int, int> > > q;
     for(int i=0;i<n;i++) {
-        q.push({i, {0, 1<<i}});
+        q.push({i, {1<<i, 0}});
+        visited[0][i] = 1;
     }
     while(!q.empty()) {
         int node = q.front().first;
-        int w = q.front().second.first;
-        int mask = q.front().second.second;
+        int mask = q.front().second.first;
+        int cost = q.front().second.second;
         q.pop();
-        for(auto &[nw, nn]: al[node]) {
-            int neww = nw+w;
-            if(!visited[nn][neww] && (mask & (1<<nn)) == 0) {
-                int newmask = mask | (1<<nn);
-                q.push({nn, {neww, newmask}});
-                visited[nn][neww] = 1;
-                ans[neww] = 1;
+
+        canCost[cost] = 1;
+
+        for(auto [nn, nw]: al[node]) {
+            int newcost = cost + nw;
+            if((mask & (1<<nn)) == 0 && !visited[newcost][nn]) {
+                q.push({nn, {mask | (1<<nn), newcost}});
+                visited[newcost][nn] = 1;
             }
         }
     }
 
     for(int i=0;i<8;i++) {
-        if(ans[k[i]]) cout << "YES\n";
+        if(canCost[k[i]]) cout << "YES\n";
         else cout << "NO\n";
     }
 }

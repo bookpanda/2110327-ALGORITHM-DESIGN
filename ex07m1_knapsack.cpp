@@ -1,66 +1,75 @@
 #include<bits/stdc++.h>
 using namespace std;
 double W, ans=0;
-int n;
-
 struct Item {
     double w, v;
 
     bool operator<(const Item &other) const {
-        return w < other.w;
+        return w > other.w;
+    }
+
+    void print() {
+        cout << "item w = " << w << ", v = " << v << "\n";
     }
 };
 vector<Item> items;
-vector<vector<Item> > frac;
+vector<pair<double, Item> > itemsVal[110];
+int n;
 
-bool compare(const Item &a, const Item &b) {
-    return a.v*b.w > b.v*a.w;
-}
-
-double hrt(int idx, double w) {
-    double v = 0;
-    for(int i=idx;i<n;i++) {
-        if(w >= frac[idx][i].w) {
-            w -= frac[idx][i].w;
-            v += frac[idx][i].v;
+double hrt(int idx, double availW) {
+    double sum = 0;
+    for(int i=0;i<itemsVal[idx].size();i++) {
+        double v = itemsVal[idx][i].second.v;
+        double w = itemsVal[idx][i].second.w;
+        if(availW >= w) {
+            sum += v;
+            availW -= w;
         } else {
-            v += (frac[idx][i].v / frac[idx][i].w) * w;
+            sum += (v/w) * availW;
             break;
         }
     }
 
-    return v;
+    return sum;
 }
 
-void cook(int idx, double sumW, double sumV) {
-    if(sumW > W) return;
-    if(hrt(idx, W-sumW) + sumV < ans) return; 
+void cook(int idx, double availW, double totalVal) {
     if(idx == n) {
-        ans = max(ans, sumV);
+        ans = max(ans, totalVal);
         return;
     }
+    if(hrt(idx, availW) + totalVal < ans) return;
 
-    // cout << "start idx " << idx << ", w=" << sumW << ", v = " << ans << "\n";
-    cook(idx+1, sumW, sumV);
-    cook(idx+1, sumW+items[idx].w, sumV+items[idx].v);
+    double w = items[idx].w;
+    double v = items[idx].v;
+    if(w <= availW) {
+        cook(idx+1, availW-w, totalVal + v);
+    }
+    cook(idx+1, availW, totalVal);
 }
 
 int main() {
     cin >> W >> n;
     items.resize(n);
-    frac.resize(n);
     for(int i=0;i<n;i++) cin >> items[i].v;
     for(int i=0;i<n;i++) cin >> items[i].w;
-
-    for(int i=n-1;i>=0;i--) {
-        frac[i].resize(n);
-        for(int j=i;j<n;j++) {
-            frac[i][j].w = items[j].w;
-            frac[i][j].v = items[j].v;
-        }
-        sort(frac[i].begin()+i, frac[i].end(), compare);
+    sort(items.begin(), items.end());
+    // for(auto x: items) {
+    //     x.print();
+    // }
+    double d = items[n-1].v / items[n-1].w;
+    itemsVal[n-1].push_back({d, items[n-1]});
+    for(int i=n-2;i>=0;i--) {
+        itemsVal[i] = itemsVal[i+1];
+        double d = items[i].v / items[i].w;
+        itemsVal[i].push_back({d, items[i]});
+        sort(itemsVal[i].begin(), itemsVal[i].end());
+        reverse(itemsVal[i].begin(), itemsVal[i].end());
+        // cout << "start i = " << i << "\n";
+        // for(auto x: itemsVal[i]) {
+        //     x.second.print();
+        // }
     }
-    cook(0, 0, 0);
-
+    cook(0, W, 0);
     cout << fixed << setprecision(4) << ans << "\n";
 }

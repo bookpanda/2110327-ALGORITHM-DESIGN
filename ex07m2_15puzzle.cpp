@@ -1,112 +1,105 @@
 #include<bits/stdc++.h>
 using namespace std;
-vector<pair<int, int> > ord={{3,3},{0,0},{0,1},{0,2},{0,3},{1,0},{1,1},{1,2},{1,3},{2,0},{2,1},{2,2},{2,3},{3,0},{3,1},{3,2}};
-vector<int> reverseMoves = {1, 0, 3, 2};
-struct State {
-    int r, c;
-    vector<vector<int> > board;
-    vector<int> moves;
+vector<pair<int,int> > fb = {{3,3},{0,0},{0,1},{0,2},{0,3},{1,0},{1,1},{1,2},{1,3},{2,0},{2,1},{2,2},{2,3},{3,0},{3,1},{3,2}};
+int reverseMove[] = {1, 0, 3, 2};
+struct Board {
+    vector<vector<int> > table;
+    int r, c, move, hrt;
 
-    State(int r, int c, vector<vector<int> > board, vector<int> moves) : r(r), c(c), board(board), moves(moves) {}
-    State(const State &other) : r(other.r), c(other.c), board(other.board), moves(other.moves) {}
+    bool operator<(const Board &other) const {
+        return hrt > other.hrt;
+    }
+    Board(const Board &other ) : table(other.table), r(other.r), c(other.c), move(other.move), hrt(other.hrt)  {}
+    Board(vector<vector<int> > table, int r, int c, int move, int hrt) : table(table), r(r), c(c), move(move), hrt(hrt)  {}
     void print() {
-        cout << "------------\n";
+        cout << "board r = " << r << ", c = " << c << ", move = " << move << ", hrt = " << hrt << "\n";
         for(int i=0;i<4;i++) {
             for(int j=0;j<4;j++) {
-                if(board[i][j] < 10) cout << " ";
-                cout << board[i][j] << " ";
-            }
-            cout << "\n";
+                if(table[i][j] < 10) cout << " ";
+                cout << table[i][j] << " ";
+            } cout << "\n";
         }
-        cout << moves.size() << " moves: ";
-        for(int i=0;i<moves.size();i++) cout << moves[i] << " ";
         cout << "\n";
-    }
-
-    bool operator<(const State &other) const {
-        return moves.size() < other.moves.size();
     }
 };
 
-bool checkMove(State &s, int dir) { //0 up, 1 down, 2 left, 3 right
-    if(dir == 0) {
-        if(s.r == 0) return false;
-        swap(s.board[s.r][s.c], s.board[s.r-1][s.c]);
-        s.r--;
-    } else if(dir == 1) {
-        if(s.r == 3) return false;
-        swap(s.board[s.r][s.c], s.board[s.r+1][s.c]);
-        s.r++;
-    } else if(dir == 2) {
-        if(s.c == 0) return false;
-        swap(s.board[s.r][s.c], s.board[s.r][s.c-1]);
-        s.c--;
-    } else if(dir == 3) {
-        if(s.c == 3) return false;
-        swap(s.board[s.r][s.c], s.board[s.r][s.c+1]);
-        s.c++;
+int calHrt(Board board) {
+    int sum = 0;
+    for(int i=0;i<4;i++) {
+        for(int j=0;j<4;j++) {
+            pair<int,int> corr = fb[board.table[i][j]];
+            int difr = abs(i - corr.first);
+            int difc = abs(j - corr.second);
+            sum += difr + difc;
+        }
     }
-    s.moves.push_back(dir);
+
+    return sum + board.move;
+}
+
+bool checkMove(Board &b, int dir) {
+    if(dir == 0) {
+        if(b.r == 0) return false;
+        swap(b.table[b.r][b.c], b.table[b.r-1][b.c]);
+        b.r--;
+    } else if(dir == 1) {
+        if(b.r == 3) return false;
+        swap(b.table[b.r][b.c], b.table[b.r+1][b.c]);
+        b.r++;
+    } else if(dir == 2) {
+        if(b.c == 0) return false;
+        swap(b.table[b.r][b.c], b.table[b.r][b.c-1]);
+        b.c--;
+    } else if(dir == 3) {
+        if(b.c == 3) return false;
+        swap(b.table[b.r][b.c], b.table[b.r][b.c+1]);
+        b.c++;
+    }
+    b.move++;
 
     return true;
 }
 
-int calHrt(State &s) {
-    int sum = 0;
-    for(int i=0;i<4;i++) {
-        for(int j=0;j<4;j++) {
-            pair<int, int> corr = ord[s.board[i][j]];
-            int difr = abs(i - corr.first);
-            int difc = abs(j - corr.second);
-            sum += difr+difc;
-        }
-    }
-
-    return sum + s.moves.size();
-}
-
 int main() {
-    State initState(0, 0, {}, {});
-    initState.board.resize(4);
+    Board init({}, 0, 0, 0, 0);
+    init.table.resize(4);
     for(int i=0;i<4;i++) {
-        initState.board[i].resize(4);
+        init.table[i].resize(4);
         for(int j=0;j<4;j++) {
-            cin >> initState.board[i][j];
-            if(initState.board[i][j] == 0) {
-                initState.r = i;
-                initState.c = j;
+            cin >> init.table[i][j];
+            if(init.table[i][j] == 0) {
+                init.r = i;
+                init.c = j;
             }
         }
     }
+    init.move = 0;
+    init.hrt = calHrt(init);
 
-    priority_queue<pair<int, State> > pq;
     set<vector<vector<int> > > used;
-    int ans = INT_MAX;
-    pq.push({-calHrt(initState), initState});
-    used.insert(initState.board);
+    priority_queue<pair<Board, int> > pq;
+    pq.push({init, -1});
+    used.insert(init.table);
     while(!pq.empty()) {
-        int hrt = -pq.top().first;
-        State s = pq.top().second;
+        Board b = pq.top().first;
+        int prev = pq.top().second;
         pq.pop();
-        int lastMove = s.moves.size() == 0 ? -1 : s.moves.back();
-        // s.print();
-        // cout << "hrt = " << hrt << "\n";
-
-        if(hrt == s.moves.size()) {
-            ans = min(ans, hrt);
+        // b.print();
+        if(b.hrt - b.move == 0) {
+            cout << b.move << "\n";
             break;
         }
 
-        for(int i=0;i<4;i++) {
-            if(lastMove != -1 && i == reverseMoves[lastMove]) continue;
-            State ns(s);
-            if(!checkMove(ns, i)) continue;
-            if(used.find(ns.board) != used.end()) continue;
-            int nhrt = calHrt(ns);
-            pq.push({-nhrt, ns});
-            used.insert(ns.board);
-        }
+        int revMove = prev == -1 ? -1 : reverseMove[prev];
+        for(int i=0;i<4;i++) { //0 up, 1 down, 2 left, 3 right
+            if(i == revMove) continue;
+            Board nb = b;
+            // if(b.move > 2) continue;
+            if(!checkMove(nb, i)) continue;
+            if(used.find(nb.table) != used.end()) continue;
+            nb.hrt = calHrt(nb);
+            pq.push({nb, i});
+            used.insert(nb.table);
+        }        
     }
-
-    cout << ans << "\n";
 }
