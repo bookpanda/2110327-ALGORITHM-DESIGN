@@ -1,53 +1,49 @@
 #include<bits/stdc++.h>
 using namespace std;
-int n, m, k, ans=INT_MAX;
-vector<int> num, qs;
+int n, m, k, ans = INT_MAX;
+vector<int> v, qs;
 
-int maxSum(int quota) {
-    return qs[quota-1];
-}
-int minSum(int quota) {
-    if(n-1-quota < 0) return qs[n-1];
-    return qs[n-1] - qs[n-1-quota];
-}
-int hrt(int quota, int sum) {
-    int minS = sum + minSum(quota);
-    int maxS = sum + maxSum(quota);
-    if(k < minS) return abs(k - minS);
-    if(k > maxS) return abs(k - maxS);
+int hrt(int idx, int sum, int sel) {
+    int need = m - sel;
+    int maxSum = idx > 0 ? qs[idx-1 + need] - qs[idx-1] + sum : qs[idx-1 + need] + sum;
+    // int maxSum = qs[need-1] + sum;
+    int minSum = n-1-need >= 0 ? qs[n-1] - qs[n-1-need] + sum : qs[n-1] + sum;
+    if(k < minSum) return minSum - k;
+    if(k > maxSum) return k - maxSum;
     return 0;
 }
 
-void cook(int idx, int quota, int sum) {
-    if(quota == 0) {
+void cook(int idx, int sum, int sel) {
+    if(sel == m) {
         ans = min(ans, abs(sum - k));
         return;
     }
-    if(idx == n || quota > (n-idx+1)) return;
-    int heu = hrt(quota, sum);
-    // cout << "idx " << idx << ", q " << quota << ", sum " << sum << ", heu " << heu << ", ans " << ans << "\n";
-    if(heu > ans) return;
+    if(hrt(idx, sum, sel) > ans) return;
+    if(idx == n) return;
 
-    cook(idx+1, quota - 1, sum + num[idx]);
-    cook(idx+1, quota, sum);
+    cook(idx+1, sum, sel);
+    cook(idx+1, sum+v[idx], sel+1);
 }
 
 int main() {
-    ios_base::sync_with_stdio(false);
-    cin.tie(NULL);
-
     cin >> n >> m >> k;
-    num.resize(n);
+    v.resize(n);
     qs.resize(n);
     for(int i=0;i<n;i++) {
-        cin >> num[i];
+        cin >> v[i];
     }
-    sort(num.begin(), num.end());
-    reverse(num.begin(), num.end()); //desc
-    qs[0] = num[0];
-    for(int i=1;i<n;i++) qs[i] = qs[i-1] + num[i];
+    sort(v.begin(), v.end());
+    reverse(v.begin(), v.end());
 
-    cook(0, m, 0);
+    qs[0] = v[0];
+    for(int i=1;i<n;i++) {
+        qs[i] = qs[i-1] + v[i];
+    }
+    // cout << "qs : ";
+    // for(auto x: qs) {
+    //     cout << x << " ";
+    // } cout << "\n";
 
+    cook(0, 0, 0);
     cout << ans << "\n";
 }

@@ -1,39 +1,35 @@
 #include<bits/stdc++.h>
 using namespace std;
-int n, ans=-INT_MAX;
-vector<vector<int> > v;
-int dp[(1<<20)][25];
-bool visited[(1<<20)][25];
+int n, am[25][25];
+int visited[1 << 20][21], dp[1 << 20][21];
 
 int cook(int node, int mask) {
-    // cout << "node " << node << ", mask " << mask << ", sum " << sum << "\n";
-    if(mask == (1<<n)-1) { //visited every node
+    if(mask == (1 << n) - 1) {
         if(node == n-1) return 0;
-        return -999999;
+        return -9999999;
     }
     if(visited[mask][node]) return dp[mask][node];
 
-    int ans = -INT_MAX;
+    int res = -INT_MAX;
     for(int i=1;i<n;i++) {
-        if(mask & (1<<i)) continue;
-        int newmask = mask | (1<<i);
-        ans = max(ans, cook(i, newmask) + v[node][i]);
+        if((mask & (1<<i)) != 0 || node == i) continue;
+        int newmask = mask | (1 << i);
+        res = max(res, cook(i, newmask) + am[node][i]);
     }
-    dp[mask][node] = ans;
-    visited[mask][node] = true;
+    dp[mask][node] = res;
+    visited[mask][node] = 1;
 
-    return ans;
+    return res;
 }
+
 
 int main() {
     cin >> n;
-    v.resize(n);
     for(int i=0;i<n;i++) {
-        v[i].resize(n);
         for(int j=0;j<n;j++) {
-            cin >> v[i][j];
+            cin >> am[i][j];
         }
     }
-    
+
     cout << cook(0, 1) << "\n";
 }
